@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>VIT CabConnect</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --indigo:#4F46E5;--indigo-d:#3730A3;--violet:#7C3AED;
+  --indigo-l:#EEF2FF;--indigo-ll:#F5F3FF;
+  --teal:#0D9488;--teal-l:#CCFBF1;
+  --amber:#F59E0B;--amber-l:#FEF3C7;
+  --rose:#F43F5E;--rose-l:#FFE4E6;
+  --green:#10B981;--green-l:#D1FAE5;
+  --s900:#0F172A;--s800:#1E293B;--s700:#334155;--s600:#475569;
+  --s400:#94A3B8;--s300:#CBD5E1;--s200:#E2E8F0;--s100:#F1F5F9;--s50:#F8FAFC;
+  --bg:#F1F5F9;--surface:#FFFFFF;--card:#FFFFFF;--border:#E2E8F0;
+  --text:#0F172A;--t2:#475569;--t3:#94A3B8;--nh:68px;
+  --font:'Plus Jakarta Sans',sans-serif;
+}
+html,body{height:100%;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#4338ca 100%);display:flex;align-items:center;justify-content:center;font-family:var(--font);overflow:hidden}
+.phone{width:335px;height:680px;background:var(--bg);border-radius:44px;box-shadow:0 0 0 1px rgba(255,255,255,.15),0 40px 100px rgba(0,0,0,.5),0 8px 32px rgba(79,70,229,.3);overflow:hidden;display:flex;flex-direction:column;position:relative}
+.shell-top{background:var(--s900);padding:12px 20px 8px;flex-shrink:0}
+.notch-row{display:flex;justify-content:space-between;align-items:center}
+.notch-time{color:#fff;font-size:13px;font-weight:700}
+.notch-icons{display:flex;align-items:center;gap:5px}
+.notch-icons svg{fill:#fff;opacity:.9}
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden;background:var(--bg)}
+.screen.active{display:flex;animation:fadeUp .22s cubic-bezier(.4,0,.2,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sa{flex:1;overflow-y:auto;scrollbar-width:none}
+.sa::-webkit-scrollbar{display:none}
+.sp{padding:18px 16px 12px}
+.bnav{height:var(--nh);background:#fff;border-top:1px solid var(--border);display:flex;align-items:stretch;flex-shrink:0;padding-bottom:4px}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;color:var(--t3);font-size:10px;font-family:var(--font);font-weight:600;transition:color .15s;position:relative}
+.ni.active{color:var(--indigo)}
+.ni-dot{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--indigo);display:none}
+.ni.active .ni-dot{display:block}
+.subhdr{display:flex;align-items:center;gap:10px;padding:14px 16px 12px;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0}
+.bbtn{width:34px;height:34px;border-radius:50%;background:var(--indigo-l);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--indigo);flex-shrink:0;transition:background .15s}
+.bbtn:hover{background:var(--s200)}
+.stitle{font-size:17px;font-weight:800;color:var(--text)}
+.home-hero{background:linear-gradient(135deg,var(--indigo) 0%,var(--violet) 100%);padding:20px 18px 24px;position:relative;overflow:hidden;flex-shrink:0}
+.home-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08)}
+.home-hero::after{content:'';position:absolute;bottom:-20px;left:40px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05)}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start}
+.hero-greeting{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:3px;font-weight:500}
+.hero-name{font-size:22px;font-weight:800;color:#fff}
+.hero-ava{width:44px;height:44px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);backdrop-filter:blur(10px);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:border-color .2s}
+.hero-ava:hover{border-color:rgba(255,255,255,.7)}
+.upcoming-pill{margin-top:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:14px 15px;backdrop-filter:blur(10px);cursor:pointer;transition:background .15s}
+.upcoming-pill:hover{background:rgba(255,255,255,.18)}
+.up-label{font-size:10px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
+.up-route{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.up-meta{font-size:11.5px;color:rgba(255,255,255,.7)}
+.up-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(16,185,129,.25);color:#6ee7b7;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;margin-top:8px;border:1px solid rgba(16,185,129,.3)}
+.up-empty{font-size:13px;color:rgba(255,255,255,.6);text-align:center;padding:8px 0}
+.sec-title{font-size:13px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.qcard{background:#fff;border:1px solid var(--border);border-radius:18px;padding:16px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;cursor:pointer;transition:all .18s;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.qcard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(79,70,229,.12)}
+.qcard:active{transform:scale(.97)}
+.qcard-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.qi-create{background:var(--indigo-l)}.qi-find{background:var(--teal-l)}
+.qcard-label{font-size:13px;font-weight:700;color:var(--text)}
+.qcard-sub{font-size:11px;color:var(--t3);margin-top:-4px}
+.act-card{background:#fff;border-radius:18px;border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.act-item{display:flex;align-items:center;gap:12px;padding:12px 15px;border-bottom:1px solid var(--s100)}
+.act-item:last-child{border-bottom:none}
+.act-ico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.act-name{font-size:13px;font-weight:700;color:var(--text)}
+.act-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.fl{font-size:11.5px;font-weight:700;color:var(--t2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.fi{width:100%;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;font-family:var(--font);color:var(--text);outline:none;margin-bottom:13px;transition:border-color .2s,box-shadow .2s;appearance:none}
+.fi:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+.dr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg{margin-bottom:13px}.fg .fi{margin-bottom:0}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px}
+.chip{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;font-family:var(--font);transition:all .15s}
+.chip.on{background:var(--indigo);color:#fff;border-color:var(--indigo);box-shadow:0 2px 8px rgba(79,70,229,.3)}
+.pbtn{width:100%;background:linear-gradient(135deg,var(--indigo) 0%,var(--violet) 100%);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;margin-top:4px;box-shadow:0 4px 16px rgba(79,70,229,.35);transition:opacity .18s,transform .12s}
+.pbtn:hover:not(:disabled){opacity:.92}
+.pbtn:active:not(:disabled){transform:scale(.97)}
+.pbtn:disabled{opacity:.6;cursor:not-allowed}
+.rfc{font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px}
+.rcard{background:#fff;border-radius:18px;border:1.5px solid var(--border);padding:15px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.rcard.top{border-color:var(--indigo);box-shadow:0 4px 16px rgba(79,70,229,.15)}
+.rrow{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.rav{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.rn{font-size:13.5px;font-weight:700;color:var(--text)}
+.rs{font-size:11px;color:var(--t3);margin-top:1px}
+.mpct{font-size:12.5px;font-weight:800;margin-left:auto;white-space:nowrap}
+.hi{color:var(--green)}.mi{color:var(--amber)}
+.rdet{font-size:12px;color:var(--t3);margin-bottom:8px;font-weight:500}
+.mbar-wrap{height:3px;background:var(--s100);border-radius:3px;margin-bottom:9px;overflow:hidden}
+.mbar{height:100%;border-radius:3px}
+.trow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tag{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:var(--indigo-l);color:var(--indigo)}
+.tag.td{background:var(--amber-l);color:#92400E}
+.tag.full{background:var(--rose-l);color:#9F1239}
+.jbtn{width:100%;background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;border-radius:11px;padding:12px;font-size:13.5px;font-weight:700;font-family:var(--font);cursor:pointer;box-shadow:0 3px 10px rgba(79,70,229,.3);transition:opacity .15s,transform .1s}
+.jbtn:hover{opacity:.9}
+.jbtn:active{transform:scale(.97)}
+.jbtn.out{background:#fff;color:var(--indigo);border:1.5px solid var(--indigo);box-shadow:none}
+.jbtn.out:hover{background:var(--indigo-l)}
+.nfound{text-align:center;padding:30px 20px;color:var(--t3);font-size:13px}
+.nfi{font-size:36px;margin-bottom:10px}
+.conf-hero{background:linear-gradient(135deg,var(--green) 0%,var(--teal) 100%);padding:28px 20px 24px;text-align:center;flex-shrink:0}
+.conf-chk{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px;border:2px solid rgba(255,255,255,.3)}
+.conf-title{font-size:21px;font-weight:800;color:#fff;margin-bottom:4px}
+.conf-sub{font-size:13px;color:rgba(255,255,255,.75)}
+.dcard{background:var(--indigo-ll);border-radius:18px;border:1.5px solid rgba(79,70,229,.12);padding:15px;margin-bottom:13px}
+.dlbl{font-size:10.5px;font-weight:700;color:var(--indigo);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.drt{font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px}
+.ddt{font-size:12px;color:var(--t2);margin-bottom:10px;font-weight:500}
+.avrow{display:flex;align-items:center;margin-bottom:10px}
+.mav{width:30px;height:30px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;margin-right:-5px;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+.myou{background:var(--indigo-l);color:var(--indigo);font-size:10px;font-weight:700;padding:0 10px;height:30px;border-radius:15px;display:flex;align-items:center;border:2px solid #fff;margin-left:4px}
+.srow{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1.5px solid rgba(79,70,229,.12)}
+.slbl{font-size:12px;color:var(--t2);font-weight:600}
+.samt{font-size:18px;font-weight:800;color:var(--indigo)}
+.cnote{font-size:11.5px;color:var(--t3);text-align:center;padding:10px 14px;background:#fff;border-radius:12px;border:1px solid var(--border);margin-bottom:13px}
+.abtn{width:100%;background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;border-radius:14px;padding:14px;font-size:14.5px;font-weight:700;font-family:var(--font);cursor:pointer;margin-bottom:10px;box-shadow:0 4px 14px rgba(79,70,229,.3);transition:opacity .15s,transform .1s}
+.abtn:hover{opacity:.9}
+.abtn:active{transform:scale(.97)}
+.abtn.out{background:#fff;color:var(--text);border:1.5px solid var(--border);box-shadow:none}
+.abtn.out:hover{background:var(--s100)}
+.chdr{background:linear-gradient(135deg,var(--indigo-d),var(--violet));padding:14px 16px 12px;flex-shrink:0}
+.cbrow{display:flex;align-items:center;gap:10px}
+.cback{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.cback:hover{background:rgba(255,255,255,.25)}
+.cgname{font-size:14px;font-weight:700;color:#fff}
+.cgsub{font-size:11px;color:rgba(255,255,255,.65)}
+.cmav{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:#fff;margin-right:-4px}
+.cmsgs{flex:1;overflow-y:auto;padding:14px 14px 8px;display:flex;flex-direction:column;gap:10px;background:var(--bg);scrollbar-width:none}
+.cmsgs::-webkit-scrollbar{display:none}
+.cdiv{text-align:center;font-size:11px;color:var(--t3);margin:2px 0 6px;font-weight:600}
+.mr{display:flex;align-items:flex-end;gap:7px}
+.mr.me{flex-direction:row-reverse}
+.mav2{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#fff;flex-shrink:0}
+.mb{max-width:200px;padding:9px 12px;border-radius:16px;font-size:13px;line-height:1.5;color:var(--text);background:#fff;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.mr.me .mb{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;box-shadow:0 3px 10px rgba(79,70,229,.3)}
+.mt{font-size:10px;color:var(--t3);margin-top:3px}
+.mr.me .mt{text-align:right}
+.mcol{display:flex;flex-direction:column}
+.msndr{font-size:10px;color:var(--t3);margin-bottom:2px;font-weight:600}
+.cibar{display:flex;align-items:center;gap:9px;padding:10px 14px 14px;background:#fff;border-top:1px solid var(--border);flex-shrink:0}
+.cinput{flex:1;background:var(--s100);border:none;border-radius:22px;padding:10px 15px;font-size:13px;font-family:var(--font);color:var(--text);outline:none}
+.cinput:focus{background:var(--s200)}
+.sbtn{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),var(--violet));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;box-shadow:0 3px 10px rgba(79,70,229,.35);transition:transform .1s}
+.sbtn:active{transform:scale(.9)}
+.detail-hero{background:linear-gradient(135deg,var(--indigo),var(--violet));padding:20px 18px;flex-shrink:0}
+.detail-route{font-size:16px;font-weight:800;color:#fff;margin-bottom:3px}
+.detail-dt{font-size:12px;color:rgba(255,255,255,.7);font-weight:500}
+.detail-price{margin-top:10px;background:rgba(255,255,255,.15);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.dp-label{font-size:11px;color:rgba(255,255,255,.7);font-weight:600}
+.dp-amt{font-size:16px;font-weight:800;color:#fff}
+.info-card{background:#fff;border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:13px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:11px 15px;border-bottom:1px solid var(--s100)}
+.info-row:last-child{border-bottom:none}
+.ir-label{font-size:12px;color:var(--t3);font-weight:600}
+.ir-val{font-size:13px;font-weight:700;color:var(--text)}
+.pass-row{display:flex;align-items:center;gap:10px;padding:10px 15px;border-bottom:1px solid var(--s100)}
+.pass-row:last-child{border-bottom:none}
+.pass-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+.pass-name{font-size:13px;font-weight:700;color:var(--text)}
+.pass-sub{font-size:11px;color:var(--t3)}
+.hist-card{background:#fff;border-radius:18px;border:1px solid var(--border);padding:15px;margin-bottom:11px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.hist-route{font-size:14px;font-weight:800;color:var(--text);margin-bottom:3px}
+.hist-meta{font-size:11.5px;color:var(--t3);margin-bottom:10px;font-weight:500;line-height:1.6}
+.hist-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hbtn{padding:9px 0;border-radius:10px;border:none;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.hbtn.detail{background:var(--indigo-l);color:var(--indigo)}
+.hbtn.chat{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;box-shadow:0 2px 8px rgba(79,70,229,.25)}
+.prof-hero{background:linear-gradient(135deg,var(--indigo),var(--violet));padding:28px 20px 30px;text-align:center;flex-shrink:0}
+.prof-av{width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;margin:0 auto 12px}
+.prof-pname{font-size:19px;font-weight:800;color:#fff;margin-bottom:3px}
+.prof-email{font-size:12px;color:rgba(255,255,255,.7)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:#fff;border-radius:16px;border:1px solid var(--border);padding:16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.stat-num{font-size:28px;font-weight:800;color:var(--indigo);margin-bottom:4px}
+.stat-lbl{font-size:11px;color:var(--t3);font-weight:600}
+.bp{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
+.bg{background:var(--green-l);color:#065F46}
+.bi{background:var(--indigo-l);color:var(--indigo-d)}
+.br{background:var(--rose-l);color:#9F1239}
+.ba{background:var(--amber-l);color:#92400E}
+.fab{position:absolute;right:14px;bottom:76px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),var(--violet));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 6px 20px rgba(79,70,229,.45);transition:transform .15s;z-index:10}
+.fab:active{transform:scale(.9)}
+.fb{position:absolute;top:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:var(--rose);border:2.5px solid var(--bg);font-size:8px;color:#fff;font-weight:800;display:none;align-items:center;justify-content:center}
+.loading{position:absolute;inset:0;background:rgba(241,245,249,.85);display:flex;align-items:center;justify-content:center;z-index:50;border-radius:44px}
+.lspinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--indigo);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:15px;height:15px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
+.toast{position:absolute;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--s800);color:#fff;padding:11px 20px;border-radius:12px;font-size:12.5px;font-weight:600;opacity:0;transition:all .28s;z-index:100;pointer-events:none;white-space:nowrap;max-width:290px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.toast.s{background:var(--green)}.toast.e{background:var(--rose)}.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;padding:36px 20px;color:var(--t3);font-size:13px;font-weight:500}
+@media(max-width:380px){html,body{background:var(--bg);align-items:flex-start}.phone{width:100%;height:100vh;border-radius:0;box-shadow:none}}
+.backout-overlay{position:absolute;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s cubic-bezier(.4,0,.2,1);border-radius:44px}
+.backout-overlay.visible{opacity:1;pointer-events:all}
+.backout-sheet{width:100%;background:#fff;border-radius:28px 28px 0 0;padding:0 0 20px;transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);overflow:hidden;box-shadow:0 -20px 60px rgba(0,0,0,.2);max-height:85%}
+.backout-overlay.visible .backout-sheet{transform:translateY(0)}
+.backout-sheet-handle{width:40px;height:4px;border-radius:2px;background:var(--s200);margin:14px auto 0}
+.backout-sheet-inner{padding:16px 20px 8px}
+.backout-pulse-ring{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#FEF3C7,#FDE68A);border:3px solid #F59E0B;display:flex;align-items:center;justify-content:center;font-size:26px;margin:4px auto 14px;position:relative;animation:pulseRing 2s ease-in-out infinite}
+.backout-pulse-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(245,158,11,.35);animation:pulseRing 2s ease-in-out infinite .5s}
+.backout-pulse-ring::after{content:'';position:absolute;inset:-16px;border-radius:50%;border:1.5px solid rgba(245,158,11,.15);animation:pulseRing 2s ease-in-out infinite 1s}
+@keyframes pulseRing{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.06);opacity:.85}}
+.backout-tag{display:inline-block;background:linear-gradient(135deg,#FEF3C7,#FDE68A);color:#92400E;font-size:10px;font-weight:800;padding:4px 12px;border-radius:20px;border:1px solid #F59E0B;letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px}
+.backout-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:6px;line-height:1.3}
+.backout-sub{font-size:12.5px;color:var(--t2);margin-bottom:18px;line-height:1.6;font-weight:500}
+.backout-ride-pill{background:var(--s100);border-radius:12px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.backout-ride-icon{font-size:20px}
+.backout-ride-route{font-size:13px;font-weight:700;color:var(--text)}
+.backout-ride-dt{font-size:11px;color:var(--t3);margin-top:2px;font-weight:500}
+.backout-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.baction-approve{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;border-radius:14px;padding:13px;font-size:13.5px;font-weight:700;font-family:var(--font);cursor:pointer;box-shadow:0 4px 16px rgba(79,70,229,.35);transition:opacity .15s,transform .1s}
+.baction-approve:hover{opacity:.9}
+.baction-approve:active{transform:scale(.97)}
+.baction-later{background:var(--s100);color:var(--t2);border:none;border-radius:14px;padding:13px;font-size:13.5px;font-weight:700;font-family:var(--font);cursor:pointer;transition:background .15s}
+.baction-later:hover{background:var(--s200)}
+.backout-progress{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.backout-progress-bar{flex:1;height:6px;background:var(--s200);border-radius:3px;overflow:hidden}
+.backout-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--indigo),var(--violet));transition:width .4s ease}
+.backout-progress-label{font-size:11px;font-weight:700;color:var(--t3);white-space:nowrap}
+.backout-more{text-align:center;font-size:11.5px;color:var(--t3);font-weight:600;margin-top:14px;padding-top:12px;border-top:1px solid var(--s100)}
+.inapp-overlay{position:absolute;inset:0;background:rgba(15,23,42,0.5);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:flex-start;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease;border-radius:44px;padding-top:0}
+.inapp-overlay.visible{opacity:1;pointer-events:all}
+.inapp-popup{width:calc(100% - 32px);background:#fff;border-radius:0 0 24px 24px;padding:20px 20px 22px;transform:translateY(-100%);transition:transform .38s cubic-bezier(.34,1.2,.64,1);box-shadow:0 12px 40px rgba(0,0,0,.22);margin:0 16px}
+.inapp-overlay.visible .inapp-popup{transform:translateY(0)}
+.inapp-popup-icon{font-size:32px;margin-bottom:10px;display:block;text-align:center}
+.inapp-popup-title{font-size:16px;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px}
+.inapp-popup-sub{font-size:12.5px;color:var(--t2);text-align:center;margin-bottom:18px;line-height:1.6;font-weight:500}
+.inapp-popup-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.inapp-cancel-btn{background:var(--s100);color:var(--t2);border:none;border-radius:12px;padding:12px;font-size:13.5px;font-weight:700;font-family:var(--font);cursor:pointer}
+.inapp-confirm-btn{background:linear-gradient(135deg,#F43F5E,#E11D48);color:#fff;border:none;border-radius:12px;padding:12px;font-size:13.5px;font-weight:700;font-family:var(--font);cursor:pointer;box-shadow:0 4px 14px rgba(244,63,94,.35)}
+</style>
+</head>
+<body>
+<div class="phone" id="app">
+<div class="shell-top">
+  <div class="notch-row">
+    <span class="notch-time" id="live-time">--:--</span>
+    <div class="notch-icons">
+      <svg width="15" height="11" viewBox="0 0 15 11"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="4" width="3" height="7" rx="1"/><rect x="8" y="2" width="3" height="9" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+      <svg width="14" height="11" viewBox="0 0 14 11"><circle cx="7" cy="9.5" r="1" fill="white"/><path d="M4.5 6.5a3.5 3.5 0 015 0" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M2 4a6 6 0 0110 0" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
+      <svg width="22" height="11" viewBox="0 0 22 11"><rect x="0" y="1" width="18" height="9" rx="2" stroke="#fff" stroke-width="1" fill="none"/><rect x="1" y="2" width="13" height="7" rx="1.5" fill="#fff"/><path d="M19 3.5v4a1.5 1.5 0 000-4z" fill="#fff"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="screen active" id="s-home">
+  <div class="home-hero">
+    <div class="hero-top">
+      <div><div class="hero-greeting" id="h-greeting">Good morning,</div><div class="hero-name" id="h-name">Loading…</div></div>
+      <div class="hero-ava" id="h-ava">--</div>
+    </div>
+    <div class="upcoming-pill" id="upcoming-pill" onclick="upcomingClick()">
+      <div class="up-label">Upcoming ride</div>
+      <div id="upcoming-content"><div class="up-empty">Loading…</div></div>
+    </div>
+  </div>
+  <div class="sa"><div class="sp">
+    <div class="sec-title">Quick actions</div>
+    <div class="qgrid">
+      <div class="qcard" onclick="go('create')"><div class="qcard-icon qi-create">➕</div><div><div class="qcard-label">Create ride</div><div class="qcard-sub">Post your trip</div></div></div>
+      <div class="qcard" onclick="go('find')"><div class="qcard-icon qi-find">🔍</div><div><div class="qcard-label">Find ride</div><div class="qcard-sub">Join a trip</div></div></div>
+    </div>
+    <div class="sec-title">Recent activity</div>
+    <div class="act-card" id="activity-list"><div class="empty" style="padding:16px">No activity yet</div></div>
+  </div></div>
+  <button class="fab" onclick="go('chatinbox');loadChatInbox()">💬<span class="fb" id="fb-home"></span></button>
+  <nav class="bnav">
+    <button class="ni active" onclick="go('home')"><span style="font-size:20px">🏠</span>Home<div class="ni-dot"></div></button>
+    <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
+    <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
+    <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
+  </nav>
+</div>
+
+<!-- CREATE -->
+<div class="screen" id="s-create">
+  <div class="subhdr"><button class="bbtn" onclick="go('home')">←</button><span class="stitle">Create ride</span></div>
+  <div class="sa"><div class="sp">
+    <div class="fg"><div class="fl">Pickup point</div>
+      <select class="fi" id="cr-pickup-select" onchange="handlePickupChange()">
+        <option value="">Select pickup point…</option>
+        <option>VIT Main Gate</option><option>1A Gate</option><option>3rd Gate</option><option>All Mart Gate</option><option>Katpadi Railway Station</option><option>Chennai Airport</option><option>Bengaluru Airport</option><option value="others">Others (type below)</option>
+      </select>
+      <input class="fi" id="cr-pickup" type="text" placeholder="Type pickup point…" style="display:none;margin-top:8px"/>
+    </div>
+    <div class="fg"><div class="fl">Destination</div>
+      <select class="fi" id="cr-dest-select" onchange="handleDestChange()">
+        <option value="">Select destination…</option>
+        <option>VIT Main Gate</option><option>1A Gate</option><option>3rd Gate</option><option>All Mart Gate</option><option>Katpadi Railway Station</option><option>Chennai Airport</option><option>Bengaluru Airport</option><option value="others">Others (type below)</option>
+      </select>
+      <input class="fi" id="cr-dest" type="text" placeholder="Type destination…" style="display:none;margin-top:8px"/>
+    </div>
+    <div class="dr" style="margin-bottom:13px">
+      <div class="fg" style="margin-bottom:0"><div class="fl">Date</div><input class="fi" id="cr-date" type="date" style="margin-bottom:0"/></div>
+      <div class="fg" style="margin-bottom:0"><div class="fl">Time</div><input class="fi" id="cr-time" type="time" style="margin-bottom:0"/></div>
+    </div>
+    <div class="fl">Co-passengers</div>
+    <div class="chips" id="cp-chips"><button class="chip on" onclick="sc(this,'cp-chips')">1</button><button class="chip" onclick="sc(this,'cp-chips')">2</button><button class="chip" onclick="sc(this,'cp-chips')">3</button><button class="chip" onclick="sc(this,'cp-chips')">4</button></div>
+    <div class="fl">Gender preference</div>
+    <div class="chips" id="gp-chips"><button class="chip on" onclick="sc(this,'gp-chips')">Female only</button><button class="chip" onclick="sc(this,'gp-chips')">Male only</button><button class="chip" onclick="sc(this,'gp-chips')">Any</button></div>
+    <div class="fg"><div class="fl">Year preference</div><select class="fi" id="cr-year"><option>Any year</option><option>1st year</option><option>2nd year</option><option>3rd year</option><option>4th year</option></select></div>
+    <div class="fl">Cab type</div>
+    <div class="chips" id="cab-chips"><button class="chip on" onclick="sc(this,'cab-chips')">Sedan</button><button class="chip" onclick="sc(this,'cab-chips')">SUV</button><button class="chip" onclick="sc(this,'cab-chips')">Auto</button></div>
+    <button class="pbtn" id="post-btn" onclick="postRide()">Post ride</button>
+  </div></div>
+  <button class="fab" onclick="go('chatinbox');loadChatInbox()">💬<span class="fb"></span></button>
+  <nav class="bnav">
+    <button class="ni" onclick="go('home')"><span style="font-size:20px">🏠</span>Home</button>
+    <button class="ni active" onclick="go('create')"><span style="font-size:20px">✚</span>Create<div class="ni-dot"></div></button>
+    <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
+    <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
+  </nav>
+</div>
+
+<!-- FIND -->
+<div class="screen" id="s-find">
+  <div class="subhdr"><button class="bbtn" onclick="go('home')">←</button><span class="stitle">Find a ride</span></div>
+  <div class="sa"><div class="sp">
+    <div class="fg"><div class="fl">Pickup point</div>
+      <select class="fi" id="fd-pickup">
+        <option value="">Any pickup point</option>
+        <option>VIT Main Gate</option><option>1A Gate</option><option>3rd Gate</option>
+        <option>All Mart Gate</option><option>Katpadi Railway Station</option>
+        <option>Chennai Airport</option><option>Bengaluru Airport</option>
+      </select>
+    </div>
+    <div class="fg"><div class="fl">Destination</div>
+      <select class="fi" id="fd-dest">
+        <option value="">Any destination</option>
+        <option>VIT Main Gate</option><option>1A Gate</option><option>3rd Gate</option>
+        <option>All Mart Gate</option><option>Katpadi Railway Station</option>
+        <option>Chennai Airport</option><option>Bengaluru Airport</option>
+      </select>
+    </div>
+    <div class="fg"><div class="fl">Date</div>
+      <input class="fi" id="fd-date" type="date" style="margin-bottom:0"/>
+    </div>
+    <div class="chips" id="ff-chips">
+      <button class="chip on" onclick="sc(this,'ff-chips');filterRides()">All</button>
+      <button class="chip" onclick="sc(this,'ff-chips');filterRides()">Female only</button>
+      <button class="chip" onclick="sc(this,'ff-chips');filterRides()">Male only</button>
+    </div>
+    <button class="pbtn" style="margin-bottom:16px;padding:12px" onclick="searchRides()">🔍 Search rides</button>
+    <div class="rfc" id="rides-count"></div>
+    <div id="rides-list"></div>
+  </div></div>
+  <button class="fab" onclick="go('chatinbox');loadChatInbox()">💬<span class="fb"></span></button>
+  <nav class="bnav">
+    <button class="ni" onclick="go('home')"><span style="font-size:20px">🏠</span>Home</button>
+    <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
+    <button class="ni active" onclick="go('find')"><span style="font-size:20px">🔍</span>Find<div class="ni-dot"></div></button>
+    <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
+  </nav>
+</div>
+
+<!-- CONFIRM -->
+<div class="screen" id="s-confirm">
+  <div class="conf-hero" id="conf-hero">
+    <div class="conf-chk" id="conf-chk-icon">✅</div>
+    <div class="conf-title" id="conf-title">You're all set!</div>
+    <div class="conf-sub" id="conf-sub">Your ride has been confirmed</div>
+  </div>
+  <div class="sa"><div class="sp">
+    <div class="dcard">
+      <div class="dlbl">Ride details</div>
+      <div class="drt" id="conf-route">—</div>
+      <div class="ddt" id="conf-dt">—</div>
+      <div style="font-size:11.5px;color:var(--t3);margin-bottom:6px;font-weight:600" id="conf-pass-label">Co-passengers</div>
+      <div class="avrow" id="conf-avs"></div>
+      <div class="srow"><span class="slbl">Your share</span><span class="samt" id="conf-share">₹—</span></div>
+    </div>
+    <div class="cnote" id="conf-note">📋 Contact details shared only after confirmation</div>
+    <button class="abtn" id="conf-chat-btn" onclick="go('chat')">💬 Open group chat</button>
+  </div></div>
+  <nav class="bnav">
+    <button class="ni" onclick="go('home')"><span style="font-size:20px">🏠</span>Home</button>
+    <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
+    <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
+    <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
+  </nav>
+</div>
+
+<!-- CHAT INBOX -->
+<div class="screen" id="s-chatinbox">
+  <div class="subhdr" style="background:linear-gradient(135deg,#3730A3,#7C3AED);border:none;padding:16px">
+    <span class="stitle" style="color:#fff;font-size:18px">💬 Chats</span>
+  </div>
+  <div class="sa"><div class="sp">
+    <div id="chat-inbox-list"><div class="empty">Loading chats…</div></div>
+  </div></div>
+  <nav class="bnav">
+    <button class="ni" onclick="go('home')"><span style="font-size:20px">🏠</span>Home</button>
+    <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
+    <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
+    <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
+  </nav>
+</div>
+
+<!-- CHAT -->
+<div class="screen" id="s-chat">
+  <div class="chdr">
+    <div class="cbrow">
+      <button class="cback" onclick="go(prevS)">←</button>
+      <div id="ch-avatars" style="display:flex;margin-right:4px"></div>
+      <div><div class="cgname" id="ch-title">Group chat</div><div class="cgsub" id="ch-sub">ride group</div></div>
+    </div>
+  </div>
+  <div class="cmsgs" id="chat-msgs"></div>
+  <div class="cibar">
+    <input class="cinput" id="chat-in" type="text" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendMsg()"/>
+    <button class="sbtn" onclick="sendMsg()">↑</button>
+  </div>
+</div>
+
+<!-- RIDE DETAIL -->
+<div class="screen" id="s-ridedetail">
+  <div class="detail-hero">
+    <div class="detail-route" id="rd-route">—</div>
+    <div class="detail-dt" id="rd-dt">—</div>
+    <div class="detail-price"><span class="dp-label">Your share</span><span class="dp-amt" id="rd-share">—</span></div>
+  </div>
+  <div class="subhdr" style="background:transparent;border:none;padding:12px 16px 8px"><button class="bbtn" onclick="go('history')">←</button><span class="stitle">Ride details</span></div>
+  <div class="sa"><div class="sp" style="padding-top:4px">
+    <div class="info-card">
+      <div class="info-row"><span class="ir-label">Status</span><span class="ir-val" id="rd-status">—</span></div>
+      <div class="info-row"><span class="ir-label">Cab type</span><span class="ir-val" id="rd-cab">—</span></div>
+      <div class="info-row"><span class="ir-label">Gender preference</span><span class="ir-val" id="rd-gender">—</span></div>
+      <div class="info-row"><span class="ir-label">Year preference</span><span class="ir-val" id="rd-year">—</span></div>
+      <div class="info-row"><span class="ir-label">Seats left</span><span class="ir-val" id="rd-seats">—</span></div>
+    </div>
+    <div class="sec-title" style="margin-bottom:10px">Passengers</div>
+    <div class="info-card" id="rd-passengers"></div>
+    <div style="height:12px"></div>
+    <button class="pbtn" onclick="openChatFromDetail()">💬 Open group chat</button>
+    <div id="rd-backout-wrap" style="display:none;margin-top:10px">
+      <button class="pbtn" style="background:linear-gradient(135deg,#F43F5E,#E11D48);box-shadow:0 4px 16px rgba(244,63,94,.3)" onclick="currentRideId=detailRideId;backoutRide()">🚪 Back out from ride</button>
+    </div>
+  </div></div>
+  <nav class="bnav">
+    <button class="ni" onclick="go('home')"><span style="font-size:20px">🏠</span>Home</button>
+    <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
+    <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
+    <button class="ni active" onclick="go('history')"><span style="font-size:20px">🕐</span>History<div class="ni-dot"></div></button>
+  </nav>
+</div>
+
+<!-- PROFILE -->
+<div class="screen" id="s-profile">
+  <div class="prof-hero">
+    <div class="prof-av" id="prof-ava">--</div>
+    <div class="prof-pname" id="prof-name">—</div>
+    <div class="prof-email" id="prof-email">—</div>
+  </div>
+  <div class="sa"><div class="sp">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num" id="prof-created">0</div><div class="stat-lbl">Rides Created</div></div>
+      <div class="stat-card"><div class="stat-num" id="prof-joined">0</div><div class="stat-lbl">Rides Joined</div></div>
+    </div>
+    <div class="info-card" style="margin-bottom:14px">
+      <div class="info-row"><span class="ir-label">Year of study</span><span class="ir-val" id="prof-year">—</span></div>
+      <div class="info-row"><span class="ir-label">Gender</span><span class="ir-val" id="prof-gender">—</span></div>
+      <div class="info-row"><span class="ir-label">Accommodation</span><span class="ir-val" id="prof-accom">—</span></div>
+      <div class="info-row"><span class="ir-label">Phone</span><span class="ir-val" id="prof-phone">—</span></div>
+      <div class="info-row"><span class="ir-label">Member since</span><span class="ir-val" id="prof-since">—</span></div>
+    </div>
+    <button class="pbtn" style="background:linear-gradient(135deg,#F43F5E,#E11D48)" onclick="logout()">Log out</button>
+    <div style="height:10px"></div>
+    <button class="pbtn" style="background:transparent;color:var(--indigo);box-shadow:none;border:1.5px solid var(--indigo)" onclick="go('home')">← Back to home</button>
+  </div></div>
+</div>
+
+<!-- HISTORY -->
+<div class="screen" id="s-history">
+  <div class="subhdr"><span class="stitle" style="padding-left:4px">My Rides</span></div>
+  <div class="sa"><div class="sp"><div id="history-list"><div class="empty">Loading…</div></div></div></div>
+  <nav class="bnav">
+    <button class="ni" onclick="go('home')"><span style="font-size:20px">🏠</span>Home</button>
+    <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
+    <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
+    <button class="ni active" onclick="go('history')"><span style="font-size:20px">🕐</span>History<div class="ni-dot"></div></button>
+  </nav>
+</div>
+
+<!-- BACKOUT APPROVAL POPUP -->
+<div class="backout-overlay" id="backout-overlay">
+  <div class="backout-sheet" id="backout-sheet">
+    <div class="backout-sheet-handle"></div>
+    <div class="backout-sheet-inner">
+      <div style="text-align:center">
+        <div class="backout-pulse-ring">🚪</div>
+        <div class="backout-tag">Action needed</div>
+        <div class="backout-title" id="bo-title">Someone wants to leave</div>
+        <div class="backout-sub" id="bo-sub">They need your approval to back out of the ride.</div>
+      </div>
+      <div class="backout-ride-pill" id="bo-ride-pill">
+        <div class="backout-ride-icon">🚕</div>
+        <div>
+          <div class="backout-ride-route" id="bo-route">—</div>
+          <div class="backout-ride-dt" id="bo-dt">—</div>
+        </div>
+      </div>
+      <div class="backout-progress">
+        <div class="backout-progress-bar"><div class="backout-progress-fill" id="bo-prog-fill" style="width:0%"></div></div>
+        <div class="backout-progress-label" id="bo-prog-label">0 / 0 approved</div>
+      </div>
+      <div class="backout-actions">
+        <button class="baction-later" onclick="dismissBackoutPopup()">Later</button>
+        <button class="baction-approve" onclick="approveFromPopup()">✅ Approve</button>
+      </div>
+      <div class="backout-more" id="bo-more" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- IN-APP CONFIRM POPUP -->
+<div class="inapp-overlay" id="inapp-overlay">
+  <div class="inapp-popup">
+    <span class="inapp-popup-icon" id="inapp-icon">🚪</span>
+    <div class="inapp-popup-title" id="inapp-title">Back out of ride?</div>
+    <div class="inapp-popup-sub" id="inapp-sub">If others are in the ride, they must all approve first before you leave.</div>
+    <div class="inapp-popup-actions">
+      <button class="inapp-cancel-btn" onclick="closeInAppPopup()">Cancel</button>
+      <button class="inapp-confirm-btn" id="inapp-confirm-btn" onclick="confirmInAppAction()">Back out</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div><!-- end .phone -->
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const API = 'http://localhost:3000';
+const COLORS = ['#4F46E5','#7C3AED','#0D9488','#DC2626','#D97706','#059669','#2563EB','#DB2777'];
+
+// ── AUTH GUARD ────────────────────────────────────────────────────────────────
+const token = localStorage.getItem('vit_token');
+const user  = JSON.parse(localStorage.getItem('vit_user') || 'null');
+if (!token || !user) { location.href = 'login.html'; }
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let cur = 'home', prevS = 'home';
+let currentRideId      = null;  // ride open in chat
+let currentRideOwnerId = null;  // owner of that ride (set when chat loads)
+let detailRideId       = null;  // ride open in detail view
+let upcomingRideId     = null;  // FIX: track upcoming ride separately from chat ride
+let allRides           = [];    // cached search results
+
+// ── READ TRACKING ─────────────────────────────────────────────────────────────
+function getReadCount(rideId) {
+  return parseInt(localStorage.getItem('read_' + rideId) || '0', 10);
+}
+function setReadCount(rideId, count) {
+  localStorage.setItem('read_' + rideId, String(count));
+}
+
+// ── BACKOUT POPUP STATE ───────────────────────────────────────────────────────
+let pendingBackoutRequests   = [];
+let currentPopupRequestIndex = 0;
+let currentPopupRequestId    = null;
+let seenBackoutIds = new Set(JSON.parse(sessionStorage.getItem('seenBackouts') || '[]'));
+
+// ── IN-APP POPUP STATE ────────────────────────────────────────────────────────
+let inAppAction = null;
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function initials(name = '') {
+  return (name || '').split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2) || '??';
+}
+function avColor(str = '') {
+  let h = 0;
+  for (let c of str) h = (h * 31 + c.charCodeAt(0)) % COLORS.length;
+  return COLORS[h];
+}
+function getPrice(pickup, dest) {
+  const vit = ['vit main gate','1a gate','3rd gate','all mart gate'];
+  const p = (pickup || '').toLowerCase().trim();
+  const d = (dest   || '').toLowerCase().trim();
+  const fV = vit.some(x => p.includes(x));
+  const tV = vit.some(x => d.includes(x));
+  if ((fV && d.includes('katpadi'))        || (tV && p.includes('katpadi')))        return 500;
+  if ((fV && d.includes('chennai airport'))|| (tV && p.includes('chennai airport'))) return 4000;
+  if ((fV && d.includes('bengaluru airport'))|| (tV && p.includes('bengaluru airport'))) return 4000;
+  return null;
+}
+function esc(t = '') {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type === 's' ? 's' : type === 'e' ? 'e' : '') + ' on';
+  setTimeout(() => t.classList.remove('on'), 2600);
+}
+function showLoad(show) {
+  let ov = document.getElementById('load-ov');
+  if (show && !ov) {
+    ov = document.createElement('div');
+    ov.id = 'load-ov'; ov.className = 'loading';
+    ov.innerHTML = '<div class="lspinner"></div>';
+    document.getElementById('app').appendChild(ov);
+  } else if (!show && ov) {
+    ov.remove();
+  }
+}
+function updateTime() {
+  const t = new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true, timeZone:'Asia/Kolkata' });
+  const el = document.getElementById('live-time');
+  if (el) el.textContent = t;
+}
+function sc(el, gid) {
+  document.querySelectorAll('#' + gid + ' .chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+function getChip(gid) {
+  return document.querySelector('#' + gid + ' .chip.on')?.textContent?.trim() || '';
+}
+
+// ── API WRAPPER ───────────────────────────────────────────────────────────────
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token,
+      ...(opts.headers || {})
+    }
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Request failed');
+  return data;
+}
+
+// ── FAB BADGE ─────────────────────────────────────────────────────────────────
+async function updateFabBadge() {
+  try {
+    const data  = await api('/api/my-rides');
+    const rides = data.rides || [];
+    let totalUnread = 0;
+    await Promise.all(rides.map(async r => {
+      try {
+        const md = await api('/api/rides/' + r.id + '/messages');
+        const total = (md.messages || []).length;
+        const read  = getReadCount(r.id);
+        totalUnread += Math.max(0, total - read);
+      } catch(e) {}
+    }));
+    document.querySelectorAll('.fb').forEach(b => {
+      if (totalUnread > 0) {
+        b.textContent = totalUnread > 9 ? '9+' : String(totalUnread);
+        b.style.display = 'flex';
+      } else {
+        b.style.display = 'none';
+        b.textContent = '';
+      }
+    });
+  } catch(e) {}
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function go(screen) {
+  document.getElementById('s-' + cur).classList.remove('active');
+  prevS = cur;
+  cur   = screen;
+  document.getElementById('s-' + screen).classList.add('active');
+  if (screen === 'history')    loadHistory();
+  if (screen === 'chat')       loadChatMsgs();
+  if (screen === 'chatinbox')  loadChatInbox();
+  if (screen === 'profile')    loadProfile();
+  if (screen === 'ridedetail') loadRideDetail(detailRideId);
+  if (screen === 'home')       loadUpcoming();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const ini = initials(user.name);
+  const hr  = new Date().getHours();
+  document.getElementById('h-greeting').textContent =
+    hr < 12 ? 'Good morning,' : hr < 17 ? 'Good afternoon,' : 'Good evening,';
+  document.getElementById('h-name').textContent = (user.name || 'User').split(' ')[0] + ' 👋';
+  document.getElementById('h-ava').textContent  = ini;
+  document.getElementById('h-ava').onclick = () => { loadProfile(); go('profile'); };
+
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('cr-date').value = today;
+  document.getElementById('fd-date').value = today;
+  const now = new Date();
+  document.getElementById('cr-time').value =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+
+  updateTime();
+  setInterval(updateTime, 1000);
+  loadUpcoming();
+
+  // FIX: Pause polling when tab is hidden to save battery/bandwidth
+  setInterval(() => { if (!document.hidden) autoRefreshChat(); }, 5000);
+  setInterval(() => { if (!document.hidden) updateFabBadge(); }, 10000);
+  updateFabBadge();
+
+  checkBackoutRequests();
+  setInterval(() => { if (!document.hidden) checkBackoutRequests(); }, 20000);
+});
+
+// ── AUTO REFRESH CHAT ─────────────────────────────────────────────────────────
+async function autoRefreshChat() {
+  if (cur !== 'chat' || !currentRideId) return;
+  try {
+    const data  = await api('/api/rides/' + currentRideId + '/messages');
+    const msgs  = data.messages || [];
+    const count = msgs.length;
+    const prev  = getReadCount(currentRideId);
+    if (count > prev) {
+      await loadChatMsgs();
+    }
+  } catch(e) {}
+}
+
+// ── UPCOMING / HOME ───────────────────────────────────────────────────────────
+// FIX: Use upcomingRideId (separate from currentRideId) so pill click always
+// navigates to the correct ride, even if user is chatting in a different one.
+function upcomingClick() {
+  if (upcomingRideId) {
+    detailRideId = upcomingRideId;
+    go('ridedetail');
+  }
+}
+
+async function loadUpcoming() {
+  const uc = document.getElementById('upcoming-content');
+  const al = document.getElementById('activity-list');
+  uc.innerHTML = '<div class="up-empty">Loading…</div>';
+  try {
+    const data  = await api('/api/my-rides');
+    const rides = data.rides || [];
+    if (rides.length > 0) {
+      const r     = rides[0];
+      const price = getPrice(r.pickup || '', r.destination || '');
+      const ppl   = (r.max_seats - r.seats_left) + 1;
+      const share = price ? '₹' + Math.ceil(price / Math.max(ppl, 1)) : null;
+      uc.innerHTML =
+        '<div class="up-route">' + r.pickup + ' → ' + r.destination + '</div>' +
+        '<div class="up-meta">' + r.date + ' · ' + r.time + (share ? ' · ' + share + ' per person' : '') + '</div>' +
+        '<div class="up-badge">' + (r.status === 'full' ? '🔴 Full' : '✅ Confirmed') + '</div>';
+
+      // FIX: Set upcomingRideId separately — don't overwrite currentRideId (chat ride)
+      upcomingRideId = r.id;
+      // Only set currentRideId if it hasn't been set yet (first load)
+      if (!currentRideId) currentRideId = r.id;
+
+      al.innerHTML = rides.slice(0, 3).map(r =>
+        '<div class="act-item">' +
+        '<div class="act-ico" style="background:' + avColor(r.destination||'') + '22">🚕</div>' +
+        '<div class="act-info"><div class="act-name">' + r.destination + '</div>' +
+        '<div class="act-sub">' + r.date + ' · ' + (r.role === 'owner' ? 'You created' : 'You joined') + '</div></div>' +
+        '<div><span class="bp ' + (r.status==='full'?'br':r.status==='active'?'bi':'bg') + '" style="font-size:10px;padding:3px 9px">' +
+        (r.status==='full'?'Full':r.status==='active'?'Active':'Done') + '</span></div>' +
+        '</div>'
+      ).join('');
+    } else {
+      uc.innerHTML = '<div class="up-empty">No upcoming rides. Create or find one!</div>';
+      al.innerHTML = '<div class="empty" style="padding:16px">No activity yet</div>';
+    }
+  } catch(e) {
+    uc.innerHTML = '<div class="up-empty">Could not load — is the server running?</div>';
+  }
+}
+
+// ── BACKOUT POPUP ─────────────────────────────────────────────────────────────
+async function checkBackoutRequests() {
+  try {
+    const myData = await api('/api/my-rides');
+    const myRides = myData.rides || [];
+    let allPending = [];
+    for (const ride of myRides) {
+      try {
+        const data = await api('/api/rides/' + ride.id + '/backout-requests');
+        const reqs = data.requests || [];
+        const relevant = reqs.filter(r =>
+          r.requester_id !== user.id && !seenBackoutIds.has(r.id)
+        );
+        relevant.forEach(r => { r._ride = ride; });
+        allPending.push(...relevant);
+      } catch(e) {}
+    }
+    if (allPending.length > 0) {
+      pendingBackoutRequests   = allPending;
+      currentPopupRequestIndex = 0;
+      showBackoutPopup(allPending[0]);
+    }
+  } catch(e) {}
+}
+function showBackoutPopup(req) {
+  const ride = req._ride;
+  currentPopupRequestId = req.id;
+  document.getElementById('bo-title').textContent   = req.requester_name + ' wants to back out';
+  document.getElementById('bo-sub').textContent     = 'They need your approval as ride owner to leave.';
+  document.getElementById('bo-route').textContent   = (ride.pickup||'?') + ' → ' + (ride.destination||'?');
+  document.getElementById('bo-dt').textContent      = (ride.date||'') + ' · ' + (ride.time||'');
+  const received = req.approvals_received || 0;
+  const needed   = req.approvals_needed   || 1;
+  const pct      = Math.round((received / needed) * 100);
+  document.getElementById('bo-prog-fill').style.width = pct + '%';
+  document.getElementById('bo-prog-label').textContent = received + ' / ' + needed + ' approved';
+  const moreEl    = document.getElementById('bo-more');
+  const remaining = pendingBackoutRequests.length - 1;
+  if (remaining > 0) {
+    moreEl.style.display = 'block';
+    moreEl.textContent   = '+ ' + remaining + ' more request' + (remaining > 1 ? 's' : '') + ' waiting';
+  } else {
+    moreEl.style.display = 'none';
+  }
+  document.getElementById('backout-overlay').classList.add('visible');
+}
+function dismissBackoutPopup() {
+  if (currentPopupRequestId) {
+    seenBackoutIds.add(currentPopupRequestId);
+    sessionStorage.setItem('seenBackouts', JSON.stringify([...seenBackoutIds]));
+  }
+  currentPopupRequestIndex++;
+  document.getElementById('backout-overlay').classList.remove('visible');
+  if (currentPopupRequestIndex < pendingBackoutRequests.length) {
+    setTimeout(() => showBackoutPopup(pendingBackoutRequests[currentPopupRequestIndex]), 400);
+  }
+}
+async function approveFromPopup() {
+  if (!currentPopupRequestId) return;
+  try {
+    const data = await api('/api/backout/' + currentPopupRequestId + '/approve', { method: 'POST' });
+    seenBackoutIds.add(currentPopupRequestId);
+    sessionStorage.setItem('seenBackouts', JSON.stringify([...seenBackoutIds]));
+    document.getElementById('backout-overlay').classList.remove('visible');
+    showToast(data.approved ? '✅ Backout approved! They\'ve left the ride.' : '👍 Approval recorded!', 's');
+    currentPopupRequestIndex++;
+    if (currentPopupRequestIndex < pendingBackoutRequests.length) {
+      setTimeout(() => showBackoutPopup(pendingBackoutRequests[currentPopupRequestIndex]), 600);
+    }
+    if (cur === 'chat') loadChatMsgs();
+  } catch(e) {
+    showToast(e.message || 'Could not approve', 'e');
+  }
+}
+
+// ── IN-APP POPUP ──────────────────────────────────────────────────────────────
+function showInAppPopup(icon, title, sub, confirmLabel, onConfirm) {
+  document.getElementById('inapp-icon').textContent        = icon;
+  document.getElementById('inapp-title').textContent       = title;
+  document.getElementById('inapp-sub').textContent         = sub;
+  document.getElementById('inapp-confirm-btn').textContent = confirmLabel;
+  inAppAction = onConfirm;
+  document.getElementById('inapp-overlay').classList.add('visible');
+}
+function closeInAppPopup() {
+  document.getElementById('inapp-overlay').classList.remove('visible');
+  inAppAction = null;
+}
+function confirmInAppAction() {
+  closeInAppPopup();
+  if (inAppAction) inAppAction();
+}
+
+// ── CREATE RIDE ───────────────────────────────────────────────────────────────
+function handlePickupChange() {
+  const sel = document.getElementById('cr-pickup-select');
+  const inp = document.getElementById('cr-pickup');
+  if (sel.value === 'others') {
+    inp.style.display = 'block'; inp.focus(); inp.value = '';
+  } else {
+    inp.style.display = 'none'; inp.value = sel.value;
+  }
+}
+function handleDestChange() {
+  const sel = document.getElementById('cr-dest-select');
+  const inp = document.getElementById('cr-dest');
+  if (sel.value === 'others') {
+    inp.style.display = 'block'; inp.focus(); inp.value = '';
+  } else {
+    inp.style.display = 'none'; inp.value = sel.value;
+  }
+}
+async function postRide() {
+  const psel   = document.getElementById('cr-pickup-select');
+  const pickup = psel.value === 'others'
+    ? document.getElementById('cr-pickup').value.trim()
+    : psel.value;
+  const dsel = document.getElementById('cr-dest-select');
+  const dest = dsel.value === 'others'
+    ? document.getElementById('cr-dest').value.trim()
+    : dsel.value;
+  const date = document.getElementById('cr-date').value;
+  const time = document.getElementById('cr-time').value;
+  if (!pickup) { showToast('Select a pickup point', 'e'); return; }
+  if (!dest)   { showToast('Select a destination', 'e');  return; }
+  if (!date)   { showToast('Pick a date', 'e');            return; }
+  if (!time)   { showToast('Pick a time', 'e');            return; }
+
+  const btn = document.getElementById('post-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Posting…';
+  showLoad(true);
+  try {
+    const data = await api('/api/rides', {
+      method: 'POST',
+      body: JSON.stringify({
+        pickup, destination: dest, date, time,
+        max_seats:   parseInt(getChip('cp-chips')) || 1,
+        gender_pref: getChip('gp-chips') || 'Any',
+        year_pref:   document.getElementById('cr-year').value,
+        cab_type:    getChip('cab-chips') || 'Sedan'
+      })
+    });
+    showLoad(false);
+    showToast('Ride posted! ✓', 's');
+    currentRideId = data.ride.id;
+    upcomingRideId = data.ride.id;
+    setReadCount(currentRideId, 0);
+    document.getElementById('conf-route').textContent = data.ride.pickup + ' → ' + data.ride.destination;
+    document.getElementById('conf-dt').textContent    = data.ride.date + ' · ' + data.ride.time;
+    const rp = getPrice(pickup, dest);
+    document.getElementById('conf-share').textContent = rp ? '₹' + rp + ' (yours until someone joins)' : 'Price TBD';
+    document.getElementById('conf-avs').innerHTML     = '<div class="myou">You (owner)</div>';
+    document.getElementById('conf-hero').style.background = '';
+    document.getElementById('conf-chk-icon').textContent  = '✅';
+    document.getElementById('conf-title').textContent     = 'Ride posted!';
+    document.getElementById('conf-sub').textContent       = 'Waiting for passengers to join';
+    document.getElementById('conf-pass-label').textContent = 'Passengers';
+    document.getElementById('conf-note').textContent      = '📋 You\'ll get a notification in chat when someone requests to join';
+    document.getElementById('conf-chat-btn').textContent  = '💬 Open group chat';
+    setTimeout(() => go('confirm'), 1200);
+  } catch(e) {
+    showLoad(false);
+    showToast(e.message || 'Failed to post ride', 'e');
+  } finally {
+    btn.disabled  = false;
+    btn.innerHTML = 'Post ride';
+  }
+}
+
+// ── SEARCH / FIND ─────────────────────────────────────────────────────────────
+async function searchRides() {
+  const pickup = document.getElementById('fd-pickup').value;
+  const dest   = document.getElementById('fd-dest').value;
+  const date   = document.getElementById('fd-date').value;
+  const params = new URLSearchParams();
+  if (dest) params.append('destination', dest);
+  if (date) params.append('date', date);
+  showLoad(true);
+  try {
+    const data = await api('/api/rides?' + params.toString());
+    let rides = data.rides || [];
+    if (pickup) rides = rides.filter(r => r.pickup && r.pickup.toLowerCase().includes(pickup.toLowerCase()));
+    allRides = rides;
+    renderRides(allRides);
+  } catch(e) {
+    showToast(e.message || 'Search failed', 'e');
+    document.getElementById('rides-list').innerHTML = '<div class="nfound"><div class="nfi">😕</div>Could not load rides.</div>';
+  } finally {
+    showLoad(false);
+  }
+}
+
+function filterRides() {
+  const f = getChip('ff-chips').toLowerCase();
+  if (f === 'all') { renderRides(allRides); return; }
+  renderRides(allRides.filter(r => (r.gender_pref || '').toLowerCase().includes(f.replace(' only', ''))));
+}
+
+// FIX: renderRides is now async so it fetches user's rides to show correct button state.
+// After joining, we also refresh the search results so button updates immediately.
+async function renderRides(rides) {
+  const cnt  = document.getElementById('rides-count');
+  const list = document.getElementById('rides-list');
+  if (!rides.length) {
+    cnt.textContent  = '';
+    list.innerHTML   = '<div class="nfound"><div class="nfi">🔍</div>No rides found. Try different filters.</div>';
+    return;
+  }
+  cnt.textContent = rides.length + ' ride' + (rides.length > 1 ? 's' : '') + ' found';
+
+  let myRideIds = new Set();
+  try {
+    const myData = await api('/api/my-rides');
+    (myData.rides || []).forEach(r => myRideIds.add(r.id));
+  } catch(e) {}
+
+  const now = new Date();
+  list.innerHTML = rides.map((r, i) => {
+    const col    = avColor(r.owner_name || '');
+    const ini    = initials(r.owner_name || '?');
+    const isTop  = i === 0;
+    const pctCls = r.match_score >= 85 ? 'hi' : 'mi';
+    const tags   = [];
+    if (r.gender_pref && r.gender_pref !== 'Any') tags.push('<span class="tag">' + r.gender_pref + '</span>');
+    if (r.year_pref && r.year_pref !== 'Any year') tags.push('<span class="tag">' + r.year_pref + '</span>');
+    tags.push('<span class="tag">' + r.cab_type + '</span>');
+    if (r.seats_left <= 0)  tags.push('<span class="tag full">Full</span>');
+    else if (r.seats_left === 1) tags.push('<span class="tag td">1 seat left</span>');
+
+    const nm = (r.owner_name || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+    const pk = (r.pickup      || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+    const ds = (r.destination || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+
+    const barColor    = r.match_score >= 85
+      ? 'linear-gradient(90deg,#10B981,#0D9488)'
+      : 'linear-gradient(90deg,#F59E0B,#D97706)';
+    const isUpcoming  = new Date(r.date + 'T' + r.time) >= now;
+    const alreadyIn   = myRideIds.has(r.id);
+
+    const priceHtml = (() => {
+      const pr = getPrice(r.pickup || '', r.destination || '');
+      if (!pr) return '';
+      const ppl   = Math.max((r.max_seats - r.seats_left) + 1, 1);
+      const share = Math.ceil(pr / ppl);
+      return '<div style="font-size:12px;font-weight:700;color:#4F46E5;margin-bottom:8px;background:#EEF2FF;padding:5px 10px;border-radius:8px;display:inline-block">💰 ₹' + share + ' per person (₹' + pr + ' total ÷ ' + ppl + ' people)</div>';
+    })();
+
+    // FIX: If already in this ride (pending/confirmed), show "In ride" state instead
+    // of allowing re-joining. Server handles duplicates but UI should be clean.
+    let actionBtn;
+    if (alreadyIn && isUpcoming) {
+      actionBtn = `<button class="jbtn" style="background:linear-gradient(135deg,#F43F5E,#E11D48);box-shadow:0 3px 10px rgba(244,63,94,.3)" onclick="currentRideId=${r.id};backoutRide()">🚪 Back out</button>`;
+    } else if (alreadyIn) {
+      actionBtn = `<button class="jbtn out" disabled style="opacity:0.5;cursor:not-allowed">✅ Already joined</button>`;
+    } else {
+      actionBtn = `<button class="jbtn${isTop ? '' : ' out'}"${r.seats_left <= 0 ? ' disabled style="opacity:0.5;cursor:not-allowed"' : ''} onclick="joinRide(${r.id},'${nm}','${pk}','${ds}','${r.date}','${r.time}')">${r.seats_left <= 0 ? 'Ride Full' : 'Request to join'}</button>`;
+    }
+
+    return '<div class="rcard' + (isTop ? ' top' : '') + '">' +
+      '<div class="rrow">' +
+      '<div class="rav" style="background:' + col + '">' + ini + '</div>' +
+      '<div style="flex:1"><div class="rn">' + (r.owner_name || 'VIT Student') + '</div>' +
+      '<div class="rs">' + (r.owner_year||'') + ' · ' + (r.owner_gender||'') + ' · ' + (r.owner_accom||'') + '</div></div>' +
+      '<span class="mpct ' + pctCls + '">' + r.match_score + '%</span></div>' +
+      '<div class="mbar-wrap"><div class="mbar" style="width:' + Math.min(r.match_score, 99) + '%;background:' + barColor + '"></div></div>' +
+      '<div class="rdet">' + r.date + ' · ' + r.time + ' · ' + r.seats_left + ' seat' + (r.seats_left !== 1 ? 's' : '') + ' left</div>' +
+      priceHtml +
+      '<div class="trow">' + tags.join('') + '</div>' +
+      actionBtn + '</div>';
+  }).join('');
+}
+
+async function joinRide(rideId, ownerName, pickup, dest, date, time) {
+  showLoad(true);
+  try {
+    const data = await api('/api/rides/' + rideId + '/join', { method: 'POST' });
+    showLoad(false);
+    currentRideId = rideId;
+
+    const hero = document.getElementById('conf-hero');
+    if (data.pending) {
+      hero.style.background = 'linear-gradient(135deg,#F59E0B,#D97706)';
+      document.getElementById('conf-chk-icon').textContent   = '⏳';
+      document.getElementById('conf-title').textContent      = 'Request sent!';
+      document.getElementById('conf-sub').textContent        = 'Waiting for owner approval';
+      document.getElementById('conf-pass-label').textContent = 'Ride details';
+      document.getElementById('conf-avs').innerHTML          = '';
+      document.getElementById('conf-share').textContent      = 'Pending';
+      document.getElementById('conf-note').textContent       = '⏳ The owner will approve or decline your request. Check the group chat for updates.';
+      document.getElementById('conf-chat-btn').textContent   = '💬 View group chat';
+    } else {
+      hero.style.background = '';
+      document.getElementById('conf-chk-icon').textContent   = '✅';
+      document.getElementById('conf-title').textContent      = "You're all set!";
+      document.getElementById('conf-sub').textContent        = 'Your ride has been confirmed';
+      document.getElementById('conf-pass-label').textContent = 'Co-passengers';
+      document.getElementById('conf-note').textContent       = '📋 Contact details shared only after confirmation';
+      document.getElementById('conf-chat-btn').textContent   = '💬 Open group chat';
+      const totalP = data.co_passengers ? data.co_passengers.length + 1 : 1;
+      const bp     = getPrice(pickup, dest);
+      document.getElementById('conf-share').textContent = bp
+        ? '₹' + Math.ceil(bp / totalP) + ' (₹' + bp + ' ÷ ' + totalP + ' people)'
+        : 'Price TBD';
+      const all = [{ name: ownerName }, ...(data.co_passengers || []).filter(p => p.id !== user.id)];
+      document.getElementById('conf-avs').innerHTML =
+        all.slice(0, 3).map(p =>
+          '<div class="mav" style="background:' + avColor(p.name) + '">' + initials(p.name) + '</div>'
+        ).join('') + '<div class="myou">+ you</div>';
+    }
+    document.getElementById('conf-route').textContent = pickup + ' → ' + dest;
+    document.getElementById('conf-dt').textContent    = date + ' · ' + time;
+
+    // FIX: Refresh search results after joining so the button updates immediately
+    // (server already filters out rides the user has acted on, so a re-search
+    // will naturally drop this ride from results — but update allRides to reflect
+    // the new state so filter chips still work).
+    allRides = allRides.filter(r => r.id !== rideId);
+
+    go('confirm');
+  } catch(e) {
+    showLoad(false);
+    showToast(e.message || 'Could not join ride', 'e');
+  }
+}
+
+// ── CHAT INBOX ────────────────────────────────────────────────────────────────
+async function loadChatInbox() {
+  const el = document.getElementById('chat-inbox-list');
+  el.innerHTML = '<div class="empty">Loading…</div>';
+  try {
+    const data  = await api('/api/my-rides');
+    const rides = data.rides || [];
+    if (!rides.length) {
+      el.innerHTML = '<div class="nfound"><div class="nfi">💬</div>No chats yet. Join or create a ride!</div>';
+      return;
+    }
+    const items = await Promise.all(rides.map(async r => {
+      try {
+        const md   = await api('/api/rides/' + r.id + '/messages');
+        const msgs = md.messages || [];
+        return { ride: r, last: msgs[msgs.length - 1], count: msgs.length };
+      } catch(e) {
+        return { ride: r, last: null, count: 0 };
+      }
+    }));
+    el.innerHTML = items.map(item => {
+      const r       = item.ride;
+      const last    = item.last;
+      const col     = avColor(r.owner_name || '');
+      const ini     = initials(r.owner_name || '?');
+      const unread  = Math.max(0, item.count - getReadCount(r.id));
+      const lastMsg = last
+        ? (Number(last.user_id) === Number(user.id) ? 'You: ' + last.text : last.sender_name + ': ' + last.text)
+        : 'No messages yet. Say hi! 👋';
+      const lastTime = last ? new Date(last.sent_at).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' }) : '';
+      let preview = lastMsg.replace(/__JOIN_REQUEST__:[^:]+:/, '').replace(/__JOIN_APPROVED__:[^:]+:[^:]+:/, '').replace(/__BACKOUT_REQUEST__:[^:]+:/, '').replace(/__BACKOUT_APPROVED__:[^:]+:/, '').replace(/__JOIN_DECLINED__:[^:]+:[^:]+:/, '').replace(/__BACKOUT_DECLINED__:[^:]+:[^:]+:/, '');
+      if (preview.length > 35) preview = preview.slice(0, 35) + '…';
+      const isDeclinedRole = r.role === 'declined';
+      const isPendingRole  = r.role === 'pending';
+      const isBackedOut    = r.role === 'backed_out';
+      const stBg = isDeclinedRole ? '#FFE4E6' : isPendingRole ? '#FEF3C7' : isBackedOut ? '#F1F5F9' : r.status === 'full' ? '#FFE4E6' : r.status === 'active' ? '#EEF2FF' : '#D1FAE5';
+      const stCl = isDeclinedRole ? '#9F1239' : isPendingRole ? '#92400E' : isBackedOut ? '#475569' : r.status === 'full' ? '#9F1239' : r.status === 'active' ? '#3730A3' : '#065F46';
+      const stTx = isDeclinedRole ? '❌ Declined' : isPendingRole ? '⏳ Pending' : isBackedOut ? '↩ Left' : r.status === 'full' ? 'Full' : r.status === 'active' ? 'Active' : 'Done';
+      return `<div style="display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid #F1F5F9;cursor:pointer"
+        onclick="currentRideId=${r.id};go('chat')">
+        <div style="width:46px;height:46px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0">${ini}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+            <div style="font-size:13.5px;font-weight:800;color:#0F172A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px">${esc(r.pickup)} → ${esc(r.destination)}</div>
+            <div style="font-size:10.5px;color:#94A3B8;flex-shrink:0;margin-left:6px">${lastTime}</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:12px;color:#94A3B8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:155px">${esc(preview)}</div>
+            <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;margin-left:4px">
+              ${unread > 0 ? `<span style="background:#4F46E5;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:20px">${unread}</span>` : ''}
+              <span style="font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:${stBg};color:${stCl}">${stTx}</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div class="empty">Could not load chats.</div>';
+  }
+}
+
+// ── CHAT MESSAGES ─────────────────────────────────────────────────────────────
+async function loadChatMsgs() {
+  const el = document.getElementById('chat-msgs');
+  if (!currentRideId) {
+    el.innerHTML = '<div class="cdiv">No ride selected</div><div class="nfound"><div class="nfi">💬</div>Join or create a ride first!</div>';
+    document.getElementById('ch-title').textContent  = 'Group chat';
+    document.getElementById('ch-sub').textContent    = 'no ride selected';
+    document.getElementById('ch-avatars').innerHTML  = '';
+    return;
+  }
+  try {
+    const rd         = await api('/api/rides/' + currentRideId);
+    const ride       = rd.ride;
+    const passengers = rd.passengers || [];
+    currentRideOwnerId = ride.owner_id;
+
+    const allP = [{ id: ride.owner_id, name: ride.owner_name }, ...passengers.filter(p => p.id !== ride.owner_id)];
+    document.getElementById('ch-title').textContent   = ride.pickup + ' → ' + ride.destination;
+    document.getElementById('ch-sub').textContent     = allP.length + ' passenger' + (allP.length !== 1 ? 's' : '');
+    document.getElementById('ch-avatars').innerHTML   = allP.slice(0, 3).map(p =>
+      '<div class="cmav" style="background:' + avColor(p.name) + '">' + initials(p.name) + '</div>'
+    ).join('');
+
+    const isOwner     = Number(ride.owner_id) === Number(user.id);
+    const isConfirmed = passengers.some(p => Number(p.id) === Number(user.id));
+    let myRequestStatus = null;
+    if (!isOwner && !isConfirmed) {
+      try {
+        const myRidesData = await api('/api/my-rides');
+        const myEntry = (myRidesData.rides || []).find(r => r.id === currentRideId);
+        myRequestStatus = myEntry ? myEntry.role : null;
+      } catch(e) {}
+    }
+
+    const cibar = document.querySelector('.cibar');
+    if (myRequestStatus === 'declined') {
+      cibar.innerHTML = '<div style="width:100%;text-align:center;padding:8px 0;font-size:12px;font-weight:700;color:#9F1239;background:#FFE4E6;border-radius:10px">&#10060; Your join request was declined — read-only</div>';
+    } else if (myRequestStatus === 'pending') {
+      cibar.innerHTML = '<div style="width:100%;text-align:center;padding:8px 0;font-size:12px;font-weight:700;color:#92400E;background:#FEF3C7;border-radius:10px">⏳ Waiting for owner approval — read-only</div>';
+    } else if (myRequestStatus === 'backed_out') {
+      cibar.innerHTML = '<div style="width:100%;text-align:center;padding:8px 0;font-size:12px;font-weight:700;color:#475569;background:#F1F5F9;border-radius:10px">↩ You left this ride — read-only</div>';
+    } else if (!cibar.querySelector('.cinput')) {
+      cibar.innerHTML = '<input class="cinput" id="chat-in" type="text" placeholder="Type a message…"/><button class="sbtn" onclick="sendMsg()">&#8593;</button>';
+      const inp = cibar.querySelector('#chat-in');
+      if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
+    }
+
+    const msgData = await api('/api/rides/' + currentRideId + '/messages');
+    const msgs    = msgData.messages || [];
+
+    if (!msgs.length) {
+      el.innerHTML = '<div class="cdiv">Today</div><div class="nfound"><div class="nfi">👋</div>No messages yet. Say hi!</div>';
+    } else {
+      // Pre-scan: build a set of requester IDs that already have an outcome
+      // (__JOIN_APPROVED__ or __JOIN_DECLINED__) so stale request cards don't
+      // show live Approve/Decline buttons after the owner has already acted.
+      const resolvedRequesterIds = new Set();
+      msgs.forEach(m => {
+        if (m.text && m.text.startsWith('__JOIN_APPROVED__:')) {
+          resolvedRequesterIds.add(m.text.split(':')[1]);
+        }
+        if (m.text && m.text.startsWith('__JOIN_DECLINED__:')) {
+          resolvedRequesterIds.add(m.text.split(':')[1]);
+        }
+      });
+
+      // Same pre-scan for backout requests that are already resolved
+      const resolvedBackoutIds = new Set();
+      msgs.forEach(m => {
+        if (m.text && m.text.startsWith('__BACKOUT_APPROVED__:')) {
+          // backout request ID is in __BACKOUT_REQUEST__ messages — match by text scan
+          // We resolve by checking if ANY backout_approved exists after a request
+          // Simplest: mark all request IDs that appear before an approved/declined msg
+        }
+        if (m.text && m.text.startsWith('__BACKOUT_DECLINED__:')) {
+          resolvedBackoutIds.add(m.text.split(':')[1]); // declinedId (requester's user id)
+        }
+      });
+      // For backout: if __BACKOUT_APPROVED__ exists, all pending backout requests are resolved
+      const backoutFullyResolved = msgs.some(m => m.text && m.text.startsWith('__BACKOUT_APPROVED__:'));
+
+      let html = '<div class="cdiv">Today</div>';
+      msgs.forEach(m => {
+        const isMe    = Number(m.user_id) === Number(user.id);
+        const isOwner = Number(currentRideOwnerId) === Number(user.id);
+        const col     = avColor(m.sender_name || '');
+        const ini     = initials(m.sender_name || '?');
+        const t       = new Date(m.sent_at).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+
+        // ── System: Join request ──
+        if (m.text && m.text.startsWith('__JOIN_REQUEST__:')) {
+          const parts       = m.text.split(':');
+          const requesterId = parts[1];
+          const name        = parts[2] || 'Someone';
+          const isRequester = Number(m.user_id) === Number(user.id);
+          const isResolved  = resolvedRequesterIds.has(requesterId);
+          // Subtitle changes once resolved
+          const subtitle = isResolved
+            ? 'This request has been resolved'
+            : (isRequester ? 'Waiting for owner approval' : 'Needs owner approval');
+          html += `<div style="margin:8px 0;padding:14px 15px;background:linear-gradient(135deg,#EEF2FF,#E0E7FF);border-radius:16px;border:1.5px solid #4F46E5;opacity:${isResolved ? '0.6' : '1'}">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:${isResolved || !isOwner ? '0' : '8px'}">
+              <span style="font-size:18px">🙋</span>
+              <div>
+                <div style="font-size:13px;font-weight:800;color:#3730A3">${isRequester ? 'You requested' : esc(name) + ' wants'} to join</div>
+                <div style="font-size:11px;color:#4F46E5;margin-top:1px">${subtitle}</div>
+              </div>
+            </div>
+            ${isOwner && !isResolved ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+              <button onclick="declineJoin(${ride.id},${requesterId})" style="background:#F1F5F9;color:#475569;border:none;border-radius:10px;padding:10px;font-size:12.5px;font-weight:700;font-family:var(--font);cursor:pointer">❌ Decline</button>
+              <button onclick="approveJoin(${ride.id},${requesterId})" style="background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:10px;padding:10px;font-size:12.5px;font-weight:700;font-family:var(--font);cursor:pointer;box-shadow:0 3px 10px rgba(79,70,229,.3)">✅ Approve</button>
+            </div>` : ''}
+          </div>`;
+          return;
+        }
+        
+        // ── System: Join approved ──
+        if (m.text && m.text.startsWith('__JOIN_APPROVED__:')) {
+          const parts      = m.text.split(':');
+          const joinedId   = parts[1];
+          const joinedName = parts[2] || 'Someone';
+          const ownerName  = parts[3] || 'Owner';
+          const isJoined   = Number(joinedId) === Number(user.id);
+          html += `<div style="margin:8px 0;padding:14px 16px;background:linear-gradient(135deg,#D1FAE5,#A7F3D0);border-radius:16px;border:2px solid #10B981">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:22px">🎉</span>
+              <div style="font-size:14px;font-weight:800;color:#065F46">${isJoined ? 'You joined the ride!' : esc(joinedName) + ' has joined the ride!'}</div>
+            </div>
+            <div style="font-size:12px;color:#047857;font-weight:600">Approved by <strong>${esc(ownerName)}</strong> · Fare split updated</div>
+          </div>`;
+          return;
+        }
+
+        // ── System: Join declined ──
+        if (m.text && m.text.startsWith('__JOIN_DECLINED__:')) {
+          const parts        = m.text.split(':');
+          const declinedId   = parts[1];
+          const declinedName = parts[2] || 'Someone';
+          const ownerName    = parts[3] || 'Owner';
+          const isDeclined   = Number(declinedId) === Number(user.id);
+          html += `<div style="margin:8px 0;padding:14px 16px;background:linear-gradient(135deg,#FFE4E6,#FECDD3);border-radius:16px;border:2px solid #F43F5E">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:22px">🚫</span>
+              <div style="font-size:14px;font-weight:800;color:#9F1239">${isDeclined ? '<strong>' + esc(ownerName) + '</strong> declined your join request' : '<strong>' + esc(ownerName) + '</strong> declined ' + esc(declinedName) + '\'s request'}</div>
+            </div>
+            <div style="font-size:12px;color:#BE123C;font-weight:600">${isDeclined ? 'You were not added to this ride' : 'They were not added to the ride'}</div>
+          </div>`;
+          return;
+        }
+
+        // ── System: Backout request ──
+        if (m.text && m.text.startsWith('__BACKOUT_REQUEST__:')) {
+          const parts       = m.text.split(':');
+          const requestId   = parts[1];
+          const name        = parts[2] || 'Someone';
+          const isRequester = Number(m.user_id) === Number(user.id);
+          // Resolved if a later BACKOUT_APPROVED or BACKOUT_DECLINED message exists
+          const isResolved  = backoutFullyResolved || resolvedBackoutIds.has(String(m.user_id));
+          const subtitle = isResolved
+            ? 'This request has been resolved'
+            : (isRequester ? 'Waiting for owner to approve' : 'Needs your approval as owner');
+          html += `<div style="margin:8px 0;padding:14px 15px;background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:16px;border:1.5px solid #F59E0B;opacity:${isResolved ? '0.6' : '1'}">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:${isResolved ? '0' : '8px'}">
+              <span style="font-size:18px">🚪</span>
+              <div>
+                <div style="font-size:13px;font-weight:800;color:#92400E">${isRequester ? 'You requested' : esc(name) + ' wants'} to back out</div>
+                <div style="font-size:11px;color:#B45309;margin-top:1px">${subtitle}</div>
+              </div>
+            </div>
+            ${!isResolved && !isRequester && isOwner ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+              <button onclick="declineBackout(${requestId})" style="background:#F1F5F9;color:#475569;border:none;border-radius:10px;padding:10px;font-size:12.5px;font-weight:700;font-family:var(--font);cursor:pointer">❌ Decline</button>
+              <button onclick="approveBackout(${requestId})" style="background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;border:none;border-radius:10px;padding:10px;font-size:12.5px;font-weight:700;font-family:var(--font);cursor:pointer;box-shadow:0 3px 10px rgba(79,70,229,.3)">✅ Approve</button>
+            </div>` : (!isResolved && !isRequester ? '<div style="font-size:11px;color:#B45309;text-align:center;padding:4px 0">Waiting for owner approval</div>' : '')}
+          </div>`;
+          return;
+        }
+
+        // ── System: Backout approved ──
+        if (m.text && m.text.startsWith('__BACKOUT_APPROVED__:')) {
+          const parts         = m.text.split(':');
+          const requesterName = parts[1] || 'Someone';
+          const ownerName     = parts[2] || '';
+          const isMeOut       = requesterName === user.name;
+          html += `<div style="margin:8px 0;padding:14px 16px;background:linear-gradient(135deg,#D1FAE5,#A7F3D0);border-radius:16px;border:2px solid #10B981">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:22px">✅</span>
+              <div style="font-size:14px;font-weight:800;color:#065F46">${isMeOut ? 'You have left the ride' : esc(requesterName) + ' has left the ride'}</div>
+            </div>
+            <div style="font-size:12px;color:#047857;font-weight:600">${ownerName && ownerName !== requesterName ? 'Approved by <strong>' + esc(ownerName) + '</strong> · ' : ''}Fare split has been updated</div>
+          </div>`;
+          return;
+        }
+
+        // ── System: Backout declined ──
+        if (m.text && m.text.startsWith('__BACKOUT_DECLINED__:')) {
+          const parts         = m.text.split(':');
+          const declinedId    = parts[1];
+          const requesterName = parts[2] || 'Someone';
+          const ownerName     = parts[3] || 'Owner';
+          const isDeclined    = Number(declinedId) === Number(user.id);
+          html += `<div style="margin:8px 0;padding:14px 16px;background:linear-gradient(135deg,#FFE4E6,#FECDD3);border-radius:16px;border:2px solid #F43F5E">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:22px">🚫</span>
+              <div style="font-size:14px;font-weight:800;color:#9F1239">${isDeclined ? '<strong>' + esc(ownerName) + '</strong> declined your backout request' : '<strong>' + esc(ownerName) + '</strong> declined ' + esc(requesterName) + '\'s backout request'}</div>
+            </div>
+            <div style="font-size:12px;color:#BE123C;font-weight:600">${isDeclined ? 'You remain in the ride — contact the owner if needed' : esc(requesterName) + ' stays in the ride'}</div>
+          </div>`;
+          return;
+        }
+
+        // ── Regular message ──
+        if (isMe) {
+          html += `<div class="mr me"><div class="mcol"><div class="mb">${esc(m.text)}</div><div class="mt">${t}</div></div></div>`;
+        } else {
+          html += `<div class="mr"><div class="mav2" style="background:${col}">${ini}</div><div class="mcol"><div class="msndr">${esc(m.sender_name)}</div><div class="mb">${esc(m.text)}</div><div class="mt">${t}</div></div></div>`;
+        }
+      });
+      el.innerHTML = html;
+    }
+
+    scrollChat();
+    setReadCount(currentRideId, msgs.length);
+    updateFabBadge();
+  } catch(e) {
+    console.error('loadChatMsgs error:', e);
+    el.innerHTML = '<div class="nfound"><div class="nfi">⚠️</div>Could not load chat. Is the server running?</div>';
+  }
+}
+
+function scrollChat() {
+  setTimeout(() => {
+    const el = document.getElementById('chat-msgs');
+    if (el) el.scrollTop = el.scrollHeight;
+  }, 60);
+}
+
+async function sendMsg() {
+  const inp  = document.getElementById('chat-in');
+  if (!inp) return; // read-only bar active
+  const text = inp.value.trim();
+  if (!text) return;
+  if (!currentRideId) { showToast('Join a ride first', 'e'); return; }
+  inp.value = '';
+  try {
+    await api('/api/rides/' + currentRideId + '/messages', { method: 'POST', body: JSON.stringify({ text }) });
+    await loadChatMsgs();
+  } catch(e) {
+    showToast('Message may not have saved', 'e');
+  }
+}
+
+// ── JOIN APPROVE / DECLINE ────────────────────────────────────────────────────
+async function approveJoin(rideId, requesterId) {
+  try {
+    await api('/api/rides/' + rideId + '/join/' + requesterId + '/approve', { method: 'POST' });
+    showToast('🎉 Join approved!', 's');
+    loadChatMsgs();
+  } catch(e) {
+    showToast(e.message || 'Could not approve', 'e');
+  }
+}
+async function declineJoin(rideId, requesterId) {
+  showInAppPopup(
+    '❌',
+    'Decline this request?',
+    'The person will be notified that their request was declined.',
+    'Yes, decline',
+    async () => {
+      try {
+        await api('/api/rides/' + rideId + '/join/' + requesterId + '/decline', { method: 'POST' });
+        showToast('Request declined', 's');
+        loadChatMsgs();
+      } catch(e) {
+        showToast(e.message || 'Could not decline', 'e');
+      }
+    }
+  );
+}
+
+// ── BACKOUT APPROVE / DECLINE ─────────────────────────────────────────────────
+async function approveBackout(requestId) {
+  try {
+    const data = await api('/api/backout/' + requestId + '/approve', { method: 'POST' });
+    showToast(data.approved ? '✅ Backout approved! They\'ve left the ride.' : '👍 Approval recorded!', 's');
+    loadChatMsgs();
+  } catch(e) {
+    showToast(e.message || 'Could not approve', 'e');
+  }
+}
+async function declineBackout(requestId) {
+  showInAppPopup(
+    '🚫',
+    'Decline backout request?',
+    'The person will remain in the ride and be notified.',
+    'Yes, decline',
+    async () => {
+      try {
+        await api('/api/backout/' + requestId + '/decline', { method: 'POST' });
+        showToast('Backout request declined', 's');
+        loadChatMsgs();
+      } catch(e) {
+        showToast(e.message || 'Could not decline', 'e');
+      }
+    }
+  );
+}
+
+// ── BACKOUT (self) ────────────────────────────────────────────────────────────
+async function backoutRide() {
+  if (!currentRideId) { showToast('No active ride', 'e'); return; }
+  showInAppPopup(
+    '🚪',
+    'Back out of this ride?',
+    'The owner must approve your request before you leave. You\'ll stay in until then.',
+    'Yes, request backout',
+    async () => {
+      showLoad(true);
+      try {
+        const data = await api('/api/rides/' + currentRideId + '/backout', { method: 'POST' });
+        showLoad(false);
+        if (data.needs_approval) {
+          showToast('Backout request sent! Waiting for owner 📨', 's');
+          go('chat');
+        } else {
+          showToast('You have backed out of the ride ✅', 's');
+          currentRideId = null;
+          upcomingRideId = null;
+          setTimeout(() => go('home'), 1400);
+        }
+      } catch(e) {
+        showLoad(false);
+        showToast(e.message || 'Could not process backout', 'e');
+      }
+    }
+  );
+}
+
+// ── RIDE DETAIL ───────────────────────────────────────────────────────────────
+async function loadRideDetail(rideId) {
+  if (!rideId) return;
+  showLoad(true);
+  try {
+    const data = await api('/api/rides/' + rideId);
+    const r    = data.ride;
+    const pass = data.passengers || [];
+    showLoad(false);
+    document.getElementById('rd-route').textContent  = r.pickup + ' → ' + r.destination;
+    document.getElementById('rd-dt').textContent     = r.date + ' · ' + r.time;
+    document.getElementById('rd-cab').textContent    = r.cab_type || 'Sedan';
+    document.getElementById('rd-gender').textContent = r.gender_pref || 'Any';
+    document.getElementById('rd-year').textContent   = r.year_pref || 'Any year';
+    document.getElementById('rd-seats').textContent  = r.seats_left + ' of ' + r.max_seats + ' remaining';
+    document.getElementById('rd-status').textContent = r.status === 'full' ? '🔴 Full' : r.status === 'active' ? '✅ Active' : '✔ Completed';
+    const price  = getPrice(r.pickup, r.destination);
+    const totalP = (r.max_seats - r.seats_left) + 1;
+    document.getElementById('rd-share').textContent  = price ? '₹' + Math.ceil(price / Math.max(totalP, 1)) + ' per person' : 'TBD';
+    const allP = [{ id: r.owner_id, name: r.owner_name, note: 'Owner' }, ...pass.map(p => ({ ...p, note: 'Passenger' }))];
+    document.getElementById('rd-passengers').innerHTML = allP.map(p =>
+      '<div class="pass-row"><div class="pass-av" style="background:' + avColor(p.name) + '">' + initials(p.name) + '</div>' +
+      '<div><div class="pass-name">' + esc(p.name) + (Number(p.id) === Number(user.id) ? ' (you)' : '') + '</div>' +
+      '<div class="pass-sub">' + p.note + '</div></div></div>'
+    ).join('');
+    const isUpcoming = new Date(r.date + 'T' + r.time) >= new Date();
+    const isInRide   = Number(r.owner_id) === Number(user.id) || pass.some(p => Number(p.id) === Number(user.id));
+    const bw = document.getElementById('rd-backout-wrap');
+    if (bw) bw.style.display = (isUpcoming && isInRide) ? 'block' : 'none';
+  } catch(e) {
+    showLoad(false);
+    showToast('Could not load ride details', 'e');
+  }
+}
+function openChatFromDetail() {
+  currentRideId = detailRideId;
+  go('chat');
+}
+
+// ── HISTORY ───────────────────────────────────────────────────────────────────
+async function loadHistory() {
+  const el = document.getElementById('history-list');
+  el.innerHTML = '<div class="empty">Loading…</div>';
+  try {
+    const data  = await api('/api/my-rides');
+    const rides = data.rides || [];
+    if (!rides.length) {
+      el.innerHTML = '<div class="nfound"><div class="nfi">🚕</div>No rides yet. Create or join one!</div>';
+      return;
+    }
+    const now      = new Date();
+    const upcoming = rides.filter(r => new Date(r.date + 'T' + r.time) >= now);
+    const past     = rides.filter(r => new Date(r.date + 'T' + r.time) < now);
+    function rideCard(r) {
+      const price  = getPrice(r.pickup || '', r.destination || '');
+      const totalP = (r.max_seats - r.seats_left) + 1;
+      const share  = price ? '₹' + Math.ceil(price / Math.max(totalP, 1)) + ' per person' : 'Price TBD';
+      const stCls  = r.status === 'full' ? 'br' : r.status === 'active' ? 'bi' : 'bg';
+      const stTx   = r.status === 'full' ? 'Full' : r.status === 'active' ? 'Active' : 'Done';
+      // Show role label — include backed_out
+      const roleLabel = r.role === 'owner' ? '👑 You created'
+        : r.role === 'backed_out' ? '↩ You left'
+        : r.role === 'pending' ? '⏳ Request pending'
+        : r.role === 'declined' ? '❌ Request declined'
+        : '🧑‍🤝‍🧑 You joined';
+      return `<div class="hist-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">
+          <div class="hist-route">${esc(r.pickup || '?')} → ${esc(r.destination || '?')}</div>
+          <span class="bp ${stCls}" style="font-size:10px;padding:3px 9px;flex-shrink:0;margin-left:8px">${stTx}</span>
+        </div>
+        <div class="hist-meta">${r.date || ''} · ${r.time || ''} · ${share}<br>${roleLabel}</div>
+        <div class="hist-actions">
+          <button class="hbtn detail" onclick="detailRideId=${r.id};go('ridedetail')">📋 Details</button>
+          <button class="hbtn chat" onclick="currentRideId=${r.id};go('chat')">💬 Chat</button>
+        </div>
+      </div>`;
+    }
+    let html = '';
+    if (upcoming.length) {
+      html += `<div style="font-size:12px;font-weight:800;color:#4F46E5;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">📅 Upcoming (${upcoming.length})</div>`;
+      html += upcoming.map(rideCard).join('');
+    }
+    if (past.length) {
+      html += `<div style="font-size:12px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.6px;margin:16px 0 10px">✅ Past rides (${past.length})</div>`;
+      html += past.map(rideCard).join('');
+    }
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = '<div class="empty">Could not load rides.</div>';
+  }
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────────────
+async function loadProfile() {
+  try {
+    const data = await api('/api/me');
+    const u    = data.user;
+    document.getElementById('prof-ava').textContent   = initials(u.name);
+    document.getElementById('prof-name').textContent  = u.name;
+    document.getElementById('prof-email').textContent = u.email;
+    document.getElementById('prof-year').textContent  = u.year || 'Not set';
+    document.getElementById('prof-gender').textContent= u.gender || 'Not set';
+    document.getElementById('prof-accom').textContent = u.accommodation || 'Not set';
+    document.getElementById('prof-phone').textContent = u.phone || 'Not set';
+    document.getElementById('prof-since').textContent = u.created_at ? u.created_at.split(' ')[0] : '—';
+    const rides = await api('/api/my-rides');
+    document.getElementById('prof-created').textContent = (rides.rides || []).filter(r => r.role === 'owner').length;
+    document.getElementById('prof-joined').textContent  = (rides.rides || []).filter(r => r.role === 'passenger').length;
+  } catch(e) {
+    showToast('Could not load profile', 'e');
+  }
+}
+
+function logout() {
+  localStorage.removeItem('vit_token');
+  localStorage.removeItem('vit_user');
+  location.href = 'login.html';
+}
+</script>
+</body>
+</html>
+
+
