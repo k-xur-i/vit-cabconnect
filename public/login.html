@@ -78,7 +78,7 @@ html,body{height:100%;background:#b8b4d4;display:flex;align-items:center;justify
   </div>
 </div>
 <script>
-const API='http://localhost:3000';
+const API='https://vit-cabconnect-production.up.railway.app';
 function toast(m,t=''){const el=document.getElementById('toast');el.textContent=m;el.className='toast '+(t==='s'?'s':t==='e'?'e':'')+' on';setTimeout(()=>el.classList.remove('on'),2800)}
 function se(id,m){const i=document.getElementById(id),e=document.getElementById(id+'-e');i&&(i.className='err');e&&(e.textContent=m)}
 function so(id){const i=document.getElementById(id),e=document.getElementById(id+'-e');i&&(i.className='ok');e&&(e.textContent='')}

@@ -88,7 +88,7 @@ html,body{height:100%;background:#b8b4d4;display:flex;align-items:center;justify
   </div></div>
 </div>
 <script>
-const API='http://localhost:3000';
+const API='https://vit-cabconnect-production.up.railway.app';
 function toast(m,t=''){const el=document.getElementById('toast');el.textContent=m;el.className='toast '+(t==='s'?'s':t==='e'?'e':'')+' on';setTimeout(()=>el.classList.remove('on'),2800)}
 function se(id,m){const i=document.getElementById(id),e=document.getElementById(id+'-e');if(i)i.classList.add('err');if(e)e.textContent=m}
 function so(id){const i=document.getElementById(id),e=document.getElementById(id+'-e');if(i){i.classList.remove('err');i.classList.add('ok')}if(e)e.textContent=''}
