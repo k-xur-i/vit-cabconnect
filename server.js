@@ -7,13 +7,14 @@ const fs        = require('fs');
 const initSqlJs = require('sql.js');
 
 const app     = express();
-const PORT    = 3000;
+const PORT    = process.env.PORT || 3000;
 const SECRET  = process.env.JWT_SECRET || 'vit_cabconnect_dev_secret_2024';
 const DB_PATH = path.join(__dirname, 'cabconnect.db');
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.get('/', (req, res) => res.redirect('/login.html'));
 
 let db;
 
@@ -78,8 +79,6 @@ function qry(sql, p = []) {
   return rows;
 }
 
-// FIX: Wrap run() in a transaction to prevent race conditions (e.g. double seat
-// deduction when two approvals fire nearly simultaneously).
 function run(sql, p = []) {
   db.run(sql, p);
   const [{ lastID }] = qry('SELECT last_insert_rowid() as lastID');
@@ -87,7 +86,6 @@ function run(sql, p = []) {
   return { lastInsertRowid: lastID };
 }
 
-// Helper: run multiple statements atomically
 function runTransaction(ops) {
   db.run('BEGIN');
   try {
@@ -112,7 +110,6 @@ const VIT   = ['@vitstudent.ac.in', '@vit.ac.in'];
 const isVIT = e => e && VIT.some(d => e.toLowerCase().trim().endsWith(d));
 const tok   = (id, email) => jwt.sign({ userId: id, email }, SECRET, { expiresIn: '7d' });
 
-// FIX: Added explicit `e` parameter in catch to avoid lint warnings
 function auth(req, res, next) {
   const t = (req.headers.authorization || '').split(' ')[1];
   if (!t) return res.status(401).json({ message: 'Token required' });
@@ -211,7 +208,6 @@ app.get('/api/me', auth, (req, res) => {
   if (!u) return res.status(404).json({ message: 'User not found' });
   res.json({ user: u });
 });
-app.get('/', (req, res) => res.redirect('/login.html'));
 
 // ── CREATE RIDE ──────────────────────────────────────
 app.post('/api/rides', auth, (req, res) => {
@@ -229,14 +225,11 @@ app.post('/api/rides', auth, (req, res) => {
 });
 
 // ── SEARCH RIDES ─────────────────────────────────────
-// FIX: Filter out rides the user has already interacted with (pending/confirmed/declined)
-// so they don't see rides they've already acted on.
 app.get('/api/rides', auth, (req, res) => {
   try {
     const { destination, date } = req.query;
     const uid = req.user.userId;
 
-    // Get all ride IDs the user has already interacted with
     const interactedIds = qry(
       `SELECT ride_id FROM ride_requests WHERE user_id=? AND status IN ('pending','confirmed','declined')`,
       [uid]
@@ -247,7 +240,6 @@ app.get('/api/rides', auth, (req, res) => {
                WHERE r.status IN ('active','full') AND r.owner_id!=?`;
     const p = [uid];
 
-    // Exclude already-interacted rides
     if (interactedIds.length > 0) {
       sql += ' AND r.id NOT IN (' + interactedIds.map(() => '?').join(',') + ')';
       p.push(...interactedIds);
@@ -269,13 +261,10 @@ app.get('/api/rides', auth, (req, res) => {
 });
 
 // ── MY RIDES ─────────────────────────────────────────
-// FIX: Also return 'backed_out' rides (recent, within 72h) so users can see
-// the history entry. Previously backed-out rides silently vanished.
 app.get('/api/my-rides', auth, (req, res) => {
   try {
     const uid = req.user.userId;
 
-    // Rides the user created
     const created = qry(
       `SELECT r.*, 'owner' as role, u.name as owner_name
        FROM rides r JOIN users u ON r.owner_id=u.id
@@ -284,7 +273,6 @@ app.get('/api/my-rides', auth, (req, res) => {
       [uid]
     );
 
-    // Rides the user is a confirmed passenger in
     const joined = qry(
       `SELECT r.*, 'passenger' as role, u.name as owner_name
        FROM ride_requests rr
@@ -296,7 +284,6 @@ app.get('/api/my-rides', auth, (req, res) => {
       [uid]
     );
 
-    // Pending requests
     const pending = qry(
       `SELECT r.*, 'pending' as role, u.name as owner_name
        FROM ride_requests rr
@@ -308,7 +295,6 @@ app.get('/api/my-rides', auth, (req, res) => {
       [uid]
     );
 
-    // Recently declined (72h window so user can read the decline message)
     const declined = qry(
       `SELECT r.*, 'declined' as role, u.name as owner_name
        FROM ride_requests rr
@@ -321,8 +307,6 @@ app.get('/api/my-rides', auth, (req, res) => {
       [uid]
     );
 
-    // FIX: Include recently backed-out rides (72h window) so they show in history
-    // and the user can see the __BACKOUT_APPROVED__ message in chat.
     const backedOut = qry(
       `SELECT r.*, 'backed_out' as role, u.name as owner_name
        FROM ride_requests rr
@@ -334,7 +318,6 @@ app.get('/api/my-rides', auth, (req, res) => {
       [uid]
     );
 
-    // Deduplicate — owner trumps all, then confirmed > pending > backed_out > declined
     const seen = new Map();
     for (const r of [...created, ...joined, ...pending, ...backedOut, ...declined]) {
       if (!seen.has(r.id)) seen.set(r.id, r);
@@ -369,7 +352,7 @@ app.get('/api/rides/:id', auth, (req, res) => {
   }
 });
 
-// ── JOIN RIDE (pending — owner must approve) ─────────
+// ── JOIN RIDE ────────────────────────────────────────
 app.post('/api/rides/:id/join', auth, (req, res) => {
   try {
     const rideId = parseInt(req.params.id);
@@ -394,7 +377,6 @@ app.post('/api/rides/:id/join', auth, (req, res) => {
     run('INSERT INTO messages(ride_id,user_id,text) VALUES(?,?,?)',
       [rideId, req.user.userId, '__JOIN_REQUEST__:' + req.user.userId + ':' + requester.name]);
 
-    console.log('Join request from user', req.user.userId, 'for ride', rideId);
     res.json({ message: 'Join request sent! Waiting for owner approval.', pending: true, ride_id: rideId });
   } catch (e) {
     console.error('Join ride error:', e);
@@ -402,8 +384,7 @@ app.post('/api/rides/:id/join', auth, (req, res) => {
   }
 });
 
-// ── APPROVE JOIN (owner only) ────────────────────────
-// FIX: Use a transaction so seats_left can't go negative if two requests race.
+// ── APPROVE JOIN ─────────────────────────────────────
 app.post('/api/rides/:id/join/:userId/approve', auth, (req, res) => {
   try {
     const rideId      = parseInt(req.params.id);
@@ -415,7 +396,6 @@ app.post('/api/rides/:id/join/:userId/approve', auth, (req, res) => {
     const rr = one('SELECT * FROM ride_requests WHERE ride_id=? AND user_id=? AND status=?', [rideId, requesterId, 'pending']);
     if (!rr) return res.status(404).json({ message: 'No pending request found' });
 
-    // FIX: Re-read seats_left inside the approve logic and guard atomically
     const freshRide = one('SELECT seats_left FROM rides WHERE id=?', [rideId]);
     if (!freshRide || freshRide.seats_left < 1) return res.status(400).json({ message: 'No seats left' });
 
@@ -425,10 +405,7 @@ app.post('/api/rides/:id/join/:userId/approve', auth, (req, res) => {
     runTransaction([
       { sql: 'UPDATE ride_requests SET status=? WHERE ride_id=? AND user_id=?', params: ['confirmed', rideId, requesterId] },
       { sql: 'UPDATE rides SET seats_left=seats_left-1 WHERE id=? AND seats_left>0', params: [rideId] },
-      {
-        sql: `UPDATE rides SET status='full' WHERE id=? AND seats_left<=0`,
-        params: [rideId]
-      },
+      { sql: `UPDATE rides SET status='full' WHERE id=? AND seats_left<=0`, params: [rideId] },
       {
         sql: 'INSERT INTO messages(ride_id,user_id,text) VALUES(?,?,?)',
         params: [rideId, req.user.userId,
@@ -440,7 +417,6 @@ app.post('/api/rides/:id/join/:userId/approve', auth, (req, res) => {
       `SELECT u.id, u.name FROM ride_requests rr JOIN users u ON rr.user_id=u.id WHERE rr.ride_id=? AND rr.status='confirmed'`,
       [rideId]
     );
-    console.log('Owner approved join for user', requesterId, 'on ride', rideId);
     res.json({ message: 'Join approved!', approved: true, co_passengers: copass, your_share: calcShare(ride.pickup, ride.destination, copass.length + 1) });
   } catch (e) {
     console.error('Approve join error:', e);
@@ -448,7 +424,7 @@ app.post('/api/rides/:id/join/:userId/approve', auth, (req, res) => {
   }
 });
 
-// ── DECLINE JOIN (owner only) ────────────────────────
+// ── DECLINE JOIN ─────────────────────────────────────
 app.post('/api/rides/:id/join/:userId/decline', auth, (req, res) => {
   try {
     const rideId      = parseInt(req.params.id);
@@ -465,7 +441,6 @@ app.post('/api/rides/:id/join/:userId/decline', auth, (req, res) => {
       [rideId, req.user.userId,
        '__JOIN_DECLINED__:' + requesterId + ':' + (requester ? requester.name : 'Someone') + ':' + (owner ? owner.name : 'Owner')]);
 
-    console.log('Owner declined join for user', requesterId, 'on ride', rideId);
     res.json({ message: 'Join request declined', approved: false });
   } catch (e) {
     console.error('Decline join error:', e);
@@ -483,7 +458,6 @@ app.get('/api/rides/:id/messages', auth, (req, res) => {
 
     const isOwner = ride.owner_id === uid;
     const request = one('SELECT * FROM ride_requests WHERE ride_id=? AND user_id=?', [rideId, uid]);
-    // FIX: Also allow 'backed_out' users to read the chat so they see the approval message
     const hasAccess = isOwner || (request && ['confirmed', 'pending', 'declined', 'backed_out'].includes(request.status));
     if (!hasAccess) return res.status(403).json({ message: 'No access to this ride\'s chat' });
 
@@ -524,8 +498,6 @@ app.post('/api/rides/:id/messages', auth, (req, res) => {
 });
 
 // ── REQUEST BACKOUT ───────────────────────────────────
-// FIX: Owner backout now sends both requester name AND owner name so the
-// frontend __BACKOUT_APPROVED__ parser (parts[1] + parts[2]) works correctly.
 app.post('/api/rides/:id/backout', auth, (req, res) => {
   try {
     const rideId  = parseInt(req.params.id);
@@ -537,8 +509,6 @@ app.post('/api/rides/:id/backout', auth, (req, res) => {
     const isOwner = ride.owner_id === userId;
     if (!inRide && !isOwner) return res.status(400).json({ message: 'You are not in this ride' });
 
-    // Owner cancels immediately — FIX: include owner name in both slots so
-    // frontend sees requesterName=ownerName, ownerName=ownerName (graceful display)
     if (isOwner) {
       const owner = one('SELECT name FROM users WHERE id=?', [userId]);
       const ownerName = owner ? owner.name : 'Owner';
@@ -552,7 +522,6 @@ app.post('/api/rides/:id/backout', auth, (req, res) => {
       return res.json({ message: 'Ride cancelled', needs_approval: false });
     }
 
-    // Passenger — needs owner approval
     const existing = one('SELECT * FROM backout_requests WHERE ride_id=? AND requester_id=? AND status=?', [rideId, userId, 'pending']);
     if (existing) return res.status(409).json({ message: 'You already have a pending backout request' });
 
@@ -571,8 +540,7 @@ app.post('/api/rides/:id/backout', auth, (req, res) => {
   }
 });
 
-// ── APPROVE BACKOUT (owner only) ─────────────────────
-// FIX: Use a transaction so seat restoration and status update are atomic.
+// ── APPROVE BACKOUT ───────────────────────────────────
 app.post('/api/backout/:requestId/approve', auth, (req, res) => {
   try {
     const requestId = parseInt(req.params.requestId);
@@ -596,7 +564,6 @@ app.post('/api/backout/:requestId/approve', auth, (req, res) => {
     if (inRide) {
       ops.push({ sql: 'UPDATE ride_requests SET status=? WHERE ride_id=? AND user_id=?', params: ['backed_out', request.ride_id, request.requester_id] });
       ops.push({ sql: 'UPDATE rides SET seats_left=seats_left+1 WHERE id=?', params: [request.ride_id] });
-      // If ride was full, reopen it
       ops.push({ sql: "UPDATE rides SET status='active' WHERE id=? AND status='full'", params: [request.ride_id] });
     }
     ops.push({
@@ -613,7 +580,7 @@ app.post('/api/backout/:requestId/approve', auth, (req, res) => {
   }
 });
 
-// ── DECLINE BACKOUT (owner only) ─────────────────────
+// ── DECLINE BACKOUT ───────────────────────────────────
 app.post('/api/backout/:requestId/decline', auth, (req, res) => {
   try {
     const requestId = parseInt(req.params.requestId);
@@ -640,7 +607,7 @@ app.post('/api/backout/:requestId/decline', auth, (req, res) => {
   }
 });
 
-// ── GET PENDING BACKOUT REQUESTS (owner only) ─────────
+// ── GET PENDING BACKOUT REQUESTS ──────────────────────
 app.get('/api/rides/:id/backout-requests', auth, (req, res) => {
   try {
     const ride = one('SELECT * FROM rides WHERE id=?', [parseInt(req.params.id)]);
@@ -657,9 +624,6 @@ app.get('/api/rides/:id/backout-requests', auth, (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-// FIX: REMOVED /api/users endpoint — it exposed all user phone numbers.
-// If you need it for debugging, add it back behind an admin secret check.
 
 app.get('/api/health', (_, res) => res.json({ status: 'ok' }));
 
