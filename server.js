@@ -211,6 +211,7 @@ app.get('/api/me', auth, (req, res) => {
   if (!u) return res.status(404).json({ message: 'User not found' });
   res.json({ user: u });
 });
+app.get('/', (req, res) => res.redirect('/login.html'));
 
 // ── CREATE RIDE ──────────────────────────────────────
 app.post('/api/rides', auth, (req, res) => {
