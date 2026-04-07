@@ -189,17 +189,6 @@ html,body{height:100%;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#
 .fab{position:absolute;right:14px;bottom:76px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),var(--violet));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 6px 20px rgba(79,70,229,.45);transition:transform .15s;z-index:10}
 .fab:active{transform:scale(.9)}
 .fb{position:absolute;top:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:var(--rose);border:2.5px solid var(--bg);font-size:8px;color:#fff;font-weight:800;display:none;align-items:center;justify-content:center}
-
-.nb{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--rose);border:2.5px solid var(--bg);font-size:8px;color:#fff;font-weight:800;display:none;align-items:center;justify-content:center}
-.notif-card{background:#fff;border-radius:18px;border:1px solid var(--border);padding:14px 15px;margin-bottom:11px;box-shadow:0 2px 8px rgba(0,0,0,.04);display:flex;align-items:flex-start;gap:12px}
-.notif-ico{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.notif-body{flex:1;min-width:0}
-.notif-title{font-size:13.5px;font-weight:800;color:var(--text);margin-bottom:3px}
-.notif-sub{font-size:12px;color:var(--t3);font-weight:500;line-height:1.5;margin-bottom:6px}
-.notif-time{font-size:10.5px;color:var(--t3);font-weight:600}
-.notif-action{display:inline-block;margin-top:6px;font-size:12px;font-weight:700;color:var(--indigo);background:var(--indigo-l);padding:5px 12px;border-radius:20px;cursor:pointer;border:none;font-family:var(--font)}
-.notif-unread{border-left:3px solid var(--indigo)}
-
 .loading{position:absolute;inset:0;background:rgba(241,245,249,.85);display:flex;align-items:center;justify-content:center;z-index:50;border-radius:44px}
 .lspinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--indigo);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -288,7 +277,6 @@ html,body{height:100%;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#
     <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
     <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
     <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
-    <button class="ni" onclick="go('notif');loadNotifications()" style="position:relative"><span style="font-size:20px">🔔</span>Alerts<span class="nb" id="nb-home"></span></button>
   </nav>
 </div>
 
@@ -329,7 +317,6 @@ html,body{height:100%;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#
     <button class="ni active" onclick="go('create')"><span style="font-size:20px">✚</span>Create<div class="ni-dot"></div></button>
     <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
     <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
-    <button class="ni" onclick="go('notif');loadNotifications()" style="position:relative"><span style="font-size:20px">🔔</span>Alerts<span class="nb"></span></button>
   </nav>
 </div>
 
@@ -371,7 +358,6 @@ html,body{height:100%;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#
     <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
     <button class="ni active" onclick="go('find')"><span style="font-size:20px">🔍</span>Find<div class="ni-dot"></div></button>
     <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
-    <button class="ni" onclick="go('notif');loadNotifications()" style="position:relative"><span style="font-size:20px">🔔</span>Alerts<span class="nb"></span></button>
   </nav>
 </div>
 
@@ -399,7 +385,6 @@ html,body{height:100%;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#
     <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
     <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
     <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
-    <button class="ni" onclick="go('notif');loadNotifications()" style="position:relative"><span style="font-size:20px">🔔</span>Alerts<span class="nb"></span></button>
   </nav>
 </div>
 
@@ -416,7 +401,6 @@ html,body{height:100%;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#
     <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
     <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
     <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
-    <button class="ni" onclick="go('notif');loadNotifications()" style="position:relative"><span style="font-size:20px">🔔</span>Alerts<span class="nb"></span></button>
   </nav>
 </div>
 
@@ -465,7 +449,6 @@ html,body{height:100%;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#
     <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
     <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
     <button class="ni active" onclick="go('history')"><span style="font-size:20px">🕐</span>History<div class="ni-dot"></div></button>
-    <button class="ni" onclick="go('notif');loadNotifications()" style="position:relative"><span style="font-size:20px">🔔</span>Alerts<span class="nb"></span></button>
   </nav>
 </div>
 
@@ -503,24 +486,6 @@ html,body{height:100%;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#
     <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
     <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
     <button class="ni active" onclick="go('history')"><span style="font-size:20px">🕐</span>History<div class="ni-dot"></div></button>
-  </nav>
-</div>
-
-
-<!-- NOTIFICATIONS -->
-<div class="screen" id="s-notif">
-  <div class="subhdr" style="background:linear-gradient(135deg,#3730A3,#7C3AED);border:none;padding:16px">
-    <span class="stitle" style="color:#fff;font-size:18px">🔔 Notifications</span>
-  </div>
-  <div class="sa"><div class="sp">
-    <div id="notif-list"><div class="empty">Loading…</div></div>
-  </div></div>
-  <nav class="bnav">
-    <button class="ni" onclick="go('home')"><span style="font-size:20px">🏠</span>Home</button>
-    <button class="ni" onclick="go('create')"><span style="font-size:20px">✚</span>Create</button>
-    <button class="ni" onclick="go('find')"><span style="font-size:20px">🔍</span>Find</button>
-    <button class="ni" onclick="go('history')"><span style="font-size:20px">🕐</span>History</button>
-    <button class="ni active" onclick="go('notif');loadNotifications()"><span style="font-size:20px">🔔</span>Alerts<div class="ni-dot"></div></button>
   </nav>
 </div>
 
@@ -711,7 +676,6 @@ function go(screen) {
   if (screen === 'chatinbox')  loadChatInbox();
   if (screen === 'profile')    loadProfile();
   if (screen === 'ridedetail') loadRideDetail(detailRideId);
-  if (screen === 'notif')       loadNotifications();
   if (screen === 'home')       loadUpcoming();
 }
 
@@ -740,8 +704,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(() => { if (!document.hidden) autoRefreshChat(); }, 5000);
   setInterval(() => { if (!document.hidden) updateFabBadge(); }, 10000);
   updateFabBadge();
-  updateNotifBadge();
-  setInterval(() => { if (!document.hidden) updateNotifBadge(); }, 15000);
 
   checkBackoutRequests();
   setInterval(() => { if (!document.hidden) checkBackoutRequests(); }, 20000);
@@ -1648,183 +1610,6 @@ async function loadProfile() {
   }
 }
 
-
-// ── NOTIFICATIONS ─────────────────────────────────────────────────────────────
-const NOTIF_KEY = 'vit_notif_read_' + (user ? user.id : '');
-
-function getReadNotifIds() {
-  try { return new Set(JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]')); } catch(e) { return new Set(); }
-}
-function markNotifRead(id) {
-  const ids = getReadNotifIds();
-  ids.add(id);
-  localStorage.setItem(NOTIF_KEY, JSON.stringify([...ids]));
-}
-
-async function loadNotifications() {
-  const el = document.getElementById('notif-list');
-  el.innerHTML = '<div class="empty">Loading…</div>';
-  try {
-    const myData = await api('/api/my-rides');
-    const rides  = myData.rides || [];
-    if (!rides.length) {
-      el.innerHTML = '<div class="nfound"><div class="nfi">🔔</div>No notifications yet.</div>';
-      return;
-    }
-    const readIds = getReadNotifIds();
-    let notifs = [];
-
-    await Promise.all(rides.map(async r => {
-      try {
-        const md   = await api('/api/rides/' + r.id + '/messages');
-        const msgs = md.messages || [];
-        msgs.forEach(m => {
-          if (!m.text) return;
-          const key = 'msg_' + m.id;
-
-          // Join approved — notify the person who joined
-          if (m.text.startsWith('__JOIN_APPROVED__:')) {
-            const parts    = m.text.split(':');
-            const joinedId = parts[1];
-            if (Number(joinedId) === Number(user.id)) {
-              notifs.push({ id: key, rideId: r.id, time: m.sent_at,
-                icon: '🎉', bg: '#D1FAE5', title: 'You were approved!',
-                sub: 'You joined the ride: ' + esc(r.pickup) + ' → ' + esc(r.destination),
-                action: 'Open chat', actionFn: () => { currentRideId = r.id; go('chat'); }
-              });
-            }
-          }
-
-          // Join declined — notify the person who was declined
-          if (m.text.startsWith('__JOIN_DECLINED__:')) {
-            const parts      = m.text.split(':');
-            const declinedId = parts[1];
-            const ownerName  = parts[3] || 'Owner';
-            if (Number(declinedId) === Number(user.id)) {
-              notifs.push({ id: key, rideId: r.id, time: m.sent_at,
-                icon: '🚫', bg: '#FFE4E6', title: 'Join request declined',
-                sub: esc(ownerName) + ' declined your request for: ' + esc(r.pickup) + ' → ' + esc(r.destination),
-                action: null
-              });
-            }
-          }
-
-          // Backout approved — notify remaining passengers
-          if (m.text.startsWith('__BACKOUT_APPROVED__:')) {
-            const parts         = m.text.split(':');
-            const requesterName = parts[1] || 'Someone';
-            const isMeOut       = requesterName === user.name;
-            if (!isMeOut) {
-              notifs.push({ id: key, rideId: r.id, time: m.sent_at,
-                icon: '🚪', bg: '#FEF3C7', title: requesterName + ' left the ride',
-                sub: 'Fare split updated for: ' + esc(r.pickup) + ' → ' + esc(r.destination),
-                action: 'View details', actionFn: () => { detailRideId = r.id; go('ridedetail'); }
-              });
-            }
-          }
-
-          // Backout declined — notify requester
-          if (m.text.startsWith('__BACKOUT_DECLINED__:')) {
-            const parts      = m.text.split(':');
-            const declinedId = parts[1];
-            const ownerName  = parts[3] || 'Owner';
-            if (Number(declinedId) === Number(user.id)) {
-              notifs.push({ id: key, rideId: r.id, time: m.sent_at,
-                icon: '🚫', bg: '#FFE4E6', title: 'Backout request declined',
-                sub: esc(ownerName) + ' declined your backout request. You remain in: ' + esc(r.pickup) + ' → ' + esc(r.destination),
-                action: 'Open chat', actionFn: () => { currentRideId = r.id; go('chat'); }
-              });
-            }
-          }
-
-          // Join request — notify the owner
-          if (m.text.startsWith('__JOIN_REQUEST__:')) {
-            const parts = m.text.split(':');
-            const name  = parts[2] || 'Someone';
-            if (Number(r.owner_id || currentRideOwnerId) === Number(user.id) || r.role === 'owner') {
-              // Check if already resolved
-              const isResolved = msgs.some(x =>
-                (x.text || '').startsWith('__JOIN_APPROVED__:' + parts[1]) ||
-                (x.text || '').startsWith('__JOIN_DECLINED__:' + parts[1])
-              );
-              notifs.push({ id: key, rideId: r.id, time: m.sent_at,
-                icon: '🙋', bg: '#EEF2FF',
-                title: isResolved ? name + ' requested to join (resolved)' : name + ' wants to join your ride!',
-                sub: esc(r.pickup) + ' → ' + esc(r.destination),
-                action: isResolved ? null : 'Go to chat', actionFn: () => { currentRideId = r.id; go('chat'); }
-              });
-            }
-          }
-        });
-      } catch(e) {}
-    }));
-
-    // Sort newest first
-    notifs.sort((a, b) => new Date(b.time) - new Date(a.time));
-
-    // Mark all as read
-    notifs.forEach(n => markNotifRead(n.id));
-    updateNotifBadge();
-
-    if (!notifs.length) {
-      el.innerHTML = '<div class="nfound"><div class="nfi">🔔</div>No notifications yet.</div>';
-      return;
-    }
-
-    el.innerHTML = notifs.map(n => {
-      const t = new Date(n.time).toLocaleString('en-IN', { hour:'2-digit', minute:'2-digit', day:'numeric', month:'short' });
-      return `<div class="notif-card" style="background:${n.bg}20;border-left:3px solid ${n.bg.replace('20','')}">
-        <div class="notif-ico" style="background:${n.bg}">${n.icon}</div>
-        <div class="notif-body">
-          <div class="notif-title">${n.title}</div>
-          <div class="notif-sub">${n.sub}</div>
-          <div class="notif-time">${t}</div>
-          ${n.action && n.actionFn ? `<button class="notif-action" onclick="(${n.actionFn.toString()})()">${n.action} →</button>` : ''}
-        </div>
-      </div>`;
-    }).join('');
-
-  } catch(e) {
-    el.innerHTML = '<div class="empty">Could not load notifications.</div>';
-  }
-}
-
-async function updateNotifBadge() {
-  try {
-    const myData = await api('/api/my-rides');
-    const rides  = myData.rides || [];
-    const readIds = getReadNotifIds();
-    let unread = 0;
-    await Promise.all(rides.map(async r => {
-      try {
-        const md   = await api('/api/rides/' + r.id + '/messages');
-        const msgs = md.messages || [];
-        msgs.forEach(m => {
-          if (!m.text) return;
-          const key = 'msg_' + m.id;
-          if (readIds.has(key)) return;
-          const isForMe = (
-            (m.text.startsWith('__JOIN_APPROVED__:') && Number(m.text.split(':')[1]) === Number(user.id)) ||
-            (m.text.startsWith('__JOIN_DECLINED__:') && Number(m.text.split(':')[1]) === Number(user.id)) ||
-            (m.text.startsWith('__BACKOUT_DECLINED__:') && Number(m.text.split(':')[1]) === Number(user.id)) ||
-            (m.text.startsWith('__BACKOUT_APPROVED__:') && m.text.split(':')[1] !== user.name) ||
-            (m.text.startsWith('__JOIN_REQUEST__:') && r.role === 'owner')
-          );
-          if (isForMe) unread++;
-        });
-      } catch(e) {}
-    }));
-    document.querySelectorAll('.nb').forEach(b => {
-      if (unread > 0) {
-        b.textContent   = unread > 9 ? '9+' : String(unread);
-        b.style.display = 'flex';
-      } else {
-        b.style.display = 'none';
-      }
-    });
-  } catch(e) {}
-}
-
 function logout() {
   localStorage.removeItem('vit_token');
   localStorage.removeItem('vit_user');
@@ -1833,3 +1618,5 @@ function logout() {
 </script>
 </body>
 </html>
+
+
